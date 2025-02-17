@@ -19,33 +19,36 @@ namespace Zyl.TensorTorch {
         // -- torch.arange(start=0, end, step=1, out=None, dtype=None, layout=torch.strided, device=None, requires_grad=False)
 
         /// <summary>
-        /// This method returns a tensor containing values from a given interval [start, end) with a specified step size. When the step size is not an integer, floating-point rounding errors may occur, so it is recommended to subtract a small epsilon from the end value for consistency (此方法返回一个张量，其中包含具有指定步长的给定区间 [start，end) 的值。当步长不是整数时，可能会出现浮点舍入错误，因此建议从结束值中减去一个较小的 epsilon 以保持一致性).
+        /// This method returns a tensor containing values from a given interval [start, end) with a specified step size. When the step size is not an integer, floating-point rounding errors may occur, so it is recommended to subtract a small epsilon from the end value for consistency (此方法返回一个张量，其中包含具有指定步长的给定区间 [start，end) 的值。当步长不是整数时，可能会出现浮点舍入错误，因此建议从结束值中减去一个较小的 epsilon 以保持一致性). Like `torch.arange`.
         /// </summary>
         /// <typeparam name="T">The element type (元素类型).</typeparam>
         /// <param name="end">The ending value of the range, exclusive. This parameter is required.</param>
+        /// <param name="pinned">A Boolean whether the underlying data should be pinned or not (一个布尔值，表示是否应固定基础数据).</param>
         /// <returns>Returns new Tensor.</returns>
         public static Tensor<T> Arange<T>(T end, bool pinned = false) where T : INumberBase<T> {
             return Arange(T.Zero, end, T.One, pinned);
         }
 
         /// <summary>
-        /// This method returns a tensor containing values from a given interval [start, end) with a specified step size. When the step size is not an integer, floating-point rounding errors may occur, so it is recommended to subtract a small epsilon from the end value for consistency (此方法返回一个张量，其中包含具有指定步长的给定区间 [start，end) 的值。当步长不是整数时，可能会出现浮点舍入错误，因此建议从结束值中减去一个较小的 epsilon 以保持一致性).
+        /// This method returns a tensor containing values from a given interval [start, end) with a specified step size. When the step size is not an integer, floating-point rounding errors may occur, so it is recommended to subtract a small epsilon from the end value for consistency (此方法返回一个张量，其中包含具有指定步长的给定区间 [start，end) 的值。当步长不是整数时，可能会出现浮点舍入错误，因此建议从结束值中减去一个较小的 epsilon 以保持一致性). Like `torch.arange`.
         /// </summary>
         /// <typeparam name="T">The element type (元素类型).</typeparam>
         /// <param name="start">The starting value of the range, inclusive. Defaults to 0.</param>
         /// <param name="end">The ending value of the range, exclusive. This parameter is required.</param>
+        /// <param name="pinned">A Boolean whether the underlying data should be pinned or not (一个布尔值，表示是否应固定基础数据).</param>
         /// <returns>Returns new Tensor.</returns>
         public static Tensor<T> Arange<T>(T start, T end, bool pinned = false) where T : INumberBase<T> {
             return Arange(start, end, T.One, pinned);
         }
 
         /// <summary>
-        /// This method returns a tensor containing values from a given interval [start, end) with a specified step size. When the step size is not an integer, floating-point rounding errors may occur, so it is recommended to subtract a small epsilon from the end value for consistency (此方法返回一个张量，其中包含具有指定步长的给定区间 [start，end) 的值。当步长不是整数时，可能会出现浮点舍入错误，因此建议从结束值中减去一个较小的 epsilon 以保持一致性).
+        /// This method returns a tensor containing values from a given interval [start, end) with a specified step size. When the step size is not an integer, floating-point rounding errors may occur, so it is recommended to subtract a small epsilon from the end value for consistency (此方法返回一个张量，其中包含具有指定步长的给定区间 [start，end) 的值。当步长不是整数时，可能会出现浮点舍入错误，因此建议从结束值中减去一个较小的 epsilon 以保持一致性). Like `torch.arange`.
         /// </summary>
         /// <typeparam name="T">The element type (元素类型).</typeparam>
         /// <param name="start">The starting value of the range, inclusive. Defaults to 0.</param>
         /// <param name="end">The ending value of the range, exclusive. This parameter is required.</param>
         /// <param name="step">The difference between each consecutive value in the range. The default value is 1.</param>
+        /// <param name="pinned">A Boolean whether the underlying data should be pinned or not (一个布尔值，表示是否应固定基础数据).</param>
         /// <returns>Returns new Tensor.</returns>
         public static Tensor<T> Arange<T>(T start, T end, T step, bool pinned = false) where T : INumberBase<T> {
             nint cnt = GetRangeCount(start, end, step);
@@ -67,7 +70,7 @@ namespace Zyl.TensorTorch {
         /// <typeparam name="T">The element type (元素类型).</typeparam>
         /// <param name="value">Given value (指定值).</param>
         /// <param name="lengths">A <see cref="ReadOnlySpan{T}"/> indicating the lengths of each dimension (表示每个维度的长度).</param>
-        /// <param name="pinned">A Boolean whether the underlying data should be pinned or not (一个布尔值，表示是否应固定基础数据。).</param>
+        /// <param name="pinned">A Boolean whether the underlying data should be pinned or not (一个布尔值，表示是否应固定基础数据).</param>
         /// <returns>Returns new Tensor.</returns>
         public static Tensor<T> CreateAndFill<T>(T value, ReadOnlySpan<IntPtr> lengths, bool pinned = false) {
             Tensor<T> rt = Tensor.CreateUninitialized<T>(lengths, pinned);
@@ -89,14 +92,30 @@ namespace Zyl.TensorTorch {
             return n;
         }
 
+        // -- torch.tensor([[2, 1, 4, 3], [1, 2, 3, 4], [4, 3, 2, 1]])
+
+        /// <summary>
+        /// Create tensor based on ND array (根据N维数组创建张量). Like `torch.tensor`.
+        /// </summary>
+        /// <typeparam name="T">The element type (元素类型).</typeparam>
+        /// <param name="values">Souce values (源值).</param>
+        /// <param name="pinned">A Boolean whether the underlying data should be pinned or not (一个布尔值，表示是否应固定基础数据).</param>
+        /// <returns>Returns new Tensor.</returns>
+        public static Tensor<T> FromNDArray<T>(Array values, bool pinned = false) {
+            var tensorSpan = new TensorSpan<T>(values);
+            Tensor<T> rt = Tensor.Create<T>(tensorSpan.Lengths, pinned);
+            tensorSpan.CopyTo(rt);
+            return rt;
+        }
+
         // -- torch.ones(size, out=None, dtype=None, layout=torch.strided, device=None, requires_grad=False)
 
         /// <summary>
-        /// This method creates a tensor of a specified shape, where each element is initialized to the scalar value 1 (此方法用于创建指定形状的张量，其中每个元素都初始化为标量值1). 
+        /// This method creates a tensor of a specified shape, where each element is initialized to the scalar value 1 (此方法用于创建指定形状的张量，其中每个元素都初始化为标量值1). Like `torch.ones`.
         /// </summary>
         /// <typeparam name="T">The element type (元素类型).</typeparam>
         /// <param name="lengths">A <see cref="ReadOnlySpan{T}"/> indicating the lengths of each dimension (表示每个维度的长度).</param>
-        /// <param name="pinned">A Boolean whether the underlying data should be pinned or not (一个布尔值，表示是否应固定基础数据。).</param>
+        /// <param name="pinned">A Boolean whether the underlying data should be pinned or not (一个布尔值，表示是否应固定基础数据).</param>
         /// <returns>Returns new Tensor.</returns>
         public static Tensor<T> Ones<T>(ReadOnlySpan<IntPtr> lengths, bool pinned = false) where T : INumberBase<T> {
             return CreateAndFill(T.One, lengths, pinned);
@@ -138,11 +157,11 @@ namespace Zyl.TensorTorch {
         // -- torch.zeros(size, out=None, dtype=None, layout=torch.strided, device=None, requires_grad=False)
 
         /// <summary>
-        /// This method returns a tensor filled with zeros that has a specified shape (此方法返回一个填充有具有指定形状的零的张量).
+        /// This method returns a tensor filled with zeros that has a specified shape (此方法返回一个填充有具有指定形状的零的张量). Like `torch.zeros`.
         /// </summary>
         /// <typeparam name="T">The element type (元素类型).</typeparam>
         /// <param name="lengths">A <see cref="ReadOnlySpan{T}"/> indicating the lengths of each dimension (表示每个维度的长度).</param>
-        /// <param name="pinned">A Boolean whether the underlying data should be pinned or not (一个布尔值，表示是否应固定基础数据。).</param>
+        /// <param name="pinned">A Boolean whether the underlying data should be pinned or not (一个布尔值，表示是否应固定基础数据).</param>
         /// <returns>Returns new Tensor.</returns>
         public static Tensor<T> Zeros<T>(ReadOnlySpan<IntPtr> lengths, bool pinned = false) {
             return Tensor.Create<T>(lengths, pinned);

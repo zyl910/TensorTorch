@@ -105,11 +105,18 @@ namespace SampleD2L.Chapter02Preliminaries {
             // 其中的每个元素都从均值为0、标准差为1的标准高斯分布（正态分布）中随机采样。
             // 
             // torch.randn(3, 4)
+            writer.WriteLine("randn: {0}", Tensor.CreateAndFillGaussianNormalDistribution<float>([3, 4]).ToString());
 
             // 我们还可以[**通过提供包含数值的Python列表（或嵌套列表），来为所需张量中的每个元素赋予确定值**]。
             // 在这里，最外层的列表对应于轴0，内层的列表对应于轴1。
             // 
             // torch.tensor([[2, 1, 4, 3], [1, 2, 3, 4], [4, 3, 2, 1]])
+            var tSpan = new TensorSpan<int>(new int[,] { { 2, 1, 4, 3 }, { 1, 2, 3, 4 }, { 4, 3, 2, 1 } });
+            writer.WriteLine("TensorSpan 2D: {0}", tSpan.ToString(tSpan.Lengths));
+            tSpan = new TensorSpan<int>(new int[,,] { { { 2, 1 }, { 4, 3 } }, { { 1, 2 }, { 3, 4 } }, { { 4, 3 }, { 2, 1 } } });
+            writer.WriteLine("TensorSpan 3D: {0}", tSpan.ToString(tSpan.Lengths));
+            writer.WriteLine("tensor 2D: {0}", TTorch.FromNDArray<int>(new int[,] { { 2, 1, 4, 3 }, { 1, 2, 3, 4 }, { 4, 3, 2, 1 } }).ToString());
+            writer.WriteLine("tensor 3D: {0}", TTorch.FromNDArray<int>(new int[,,] { { { 2, 1 }, { 4, 3 } }, { { 1, 2 }, { 3, 4 } }, { { 4, 3 }, { 2, 1 } } }).ToString());
 
             // ## 运算符
             // 我们的兴趣不仅限于读取数据和写入数据。
