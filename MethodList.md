@@ -8,3 +8,41 @@
 - Ones: This method creates a tensor of a specified shape, where each element is initialized to the scalar value 1 (此方法用于创建指定形状的张量，其中每个元素都初始化为标量值1). Like `torch.ones`.
 - ToString: ReadOnlySpan to String.
 - Zeros: This method returns a tensor filled with zeros that has a specified shape (此方法返回一个填充有具有指定形状的零的张量). Like `torch.zeros`.
+
+## Map to PyTorch Method (PyTorch 方法的对照)
+
+Member of torch (torch 的成员).
+
+| PyTorch | .NET                                     | Remark |
+| ------- | ---------------------------------------- | ------ |
+| arange  | TTorch.Arange                            |        |
+| cat     | Tensor.Concatenate, Tensor.ConcatenateOnDimension |        |
+| exp     | Tensor.Exp                               |        |
+| ones    | TTorch.Ones                              |        |
+| randn   | Tensor.CreateAndFillGaussianNormalDistribution |        |
+| tensor  | TTorch.FromNDArray                       |        |
+| zeros   | TTorch.Zeros                             |        |
+|         |                                          |        |
+|         |                                          |        |
+
+Member of  tensor object (张量对象的成员).
+
+| PyTorch   | .NET              | Remark    |
+| --------- | ----------------- | --------- |
+| x         | x.ToString        | To string |
+| x.numel   | x.FlattenedLength |           |
+| x.reshape | x.Reshape         |           |
+| x.shape   | x.Lengths         |           |
+|           |                   |           |
+|           |                   |           |
+
+Operator (运算符).
+
+| PyTorch | .NET            | Remark |
+| ------- | --------------- | ------ |
+| +       | Tensor.Add      |        |
+| -       | Tensor.Subtract |        |
+| *       | Tensor.Multiply |        |
+| /       | Tensor.Divide   |        |
+| **      | Tensor.Pow      |        |
+| ==      | Tensor.Equals   |        |

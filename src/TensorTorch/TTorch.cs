@@ -95,6 +95,62 @@ namespace Zyl.TensorTorch {
         // -- torch.tensor([[2, 1, 4, 3], [1, 2, 3, 4], [4, 3, 2, 1]])
 
         /// <summary>
+        /// Create tensor based on 1D array (根据1维数组创建张量). Like `torch.tensor`.
+        /// </summary>
+        /// <typeparam name="T">The element type (元素类型).</typeparam>
+        /// <param name="values">Souce values (源值).</param>
+        /// <param name="pinned">A Boolean whether the underlying data should be pinned or not (一个布尔值，表示是否应固定基础数据).</param>
+        /// <returns>Returns new Tensor.</returns>
+        public static Tensor<T> FromNDArray<T>(T[] values, bool pinned = false) {
+            var tensorSpan = new TensorSpan<T>(values);
+            Tensor<T> rt = Tensor.Create<T>(tensorSpan.Lengths, pinned);
+            tensorSpan.CopyTo(rt);
+            return rt;
+        }
+
+        /// <summary>
+        /// Create tensor based on 2D array (根据2维数组创建张量). Like `torch.tensor`.
+        /// </summary>
+        /// <typeparam name="T">The element type (元素类型).</typeparam>
+        /// <param name="values">Souce values (源值).</param>
+        /// <param name="pinned">A Boolean whether the underlying data should be pinned or not (一个布尔值，表示是否应固定基础数据).</param>
+        /// <returns>Returns new Tensor.</returns>
+        public static Tensor<T> FromNDArray<T>(T[,] values, bool pinned = false) {
+            var tensorSpan = new TensorSpan<T>(values);
+            Tensor<T> rt = Tensor.Create<T>(tensorSpan.Lengths, pinned);
+            tensorSpan.CopyTo(rt);
+            return rt;
+        }
+
+        /// <summary>
+        /// Create tensor based on 3D array (根据3维数组创建张量). Like `torch.tensor`.
+        /// </summary>
+        /// <typeparam name="T">The element type (元素类型).</typeparam>
+        /// <param name="values">Souce values (源值).</param>
+        /// <param name="pinned">A Boolean whether the underlying data should be pinned or not (一个布尔值，表示是否应固定基础数据).</param>
+        /// <returns>Returns new Tensor.</returns>
+        public static Tensor<T> FromNDArray<T>(T[,,] values, bool pinned = false) {
+            var tensorSpan = new TensorSpan<T>(values);
+            Tensor<T> rt = Tensor.Create<T>(tensorSpan.Lengths, pinned);
+            tensorSpan.CopyTo(rt);
+            return rt;
+        }
+
+        /// <summary>
+        /// Create tensor based on 4D array (根据4维数组创建张量). Like `torch.tensor`.
+        /// </summary>
+        /// <typeparam name="T">The element type (元素类型).</typeparam>
+        /// <param name="values">Souce values (源值).</param>
+        /// <param name="pinned">A Boolean whether the underlying data should be pinned or not (一个布尔值，表示是否应固定基础数据).</param>
+        /// <returns>Returns new Tensor.</returns>
+        public static Tensor<T> FromNDArray<T>(T[,,,] values, bool pinned = false) {
+            var tensorSpan = new TensorSpan<T>(values);
+            Tensor<T> rt = Tensor.Create<T>(tensorSpan.Lengths, pinned);
+            tensorSpan.CopyTo(rt);
+            return rt;
+        }
+
+        /// <summary>
         /// Create tensor based on ND array (根据N维数组创建张量). Like `torch.tensor`.
         /// </summary>
         /// <typeparam name="T">The element type (元素类型).</typeparam>

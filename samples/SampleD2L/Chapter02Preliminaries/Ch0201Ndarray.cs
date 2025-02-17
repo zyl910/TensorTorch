@@ -143,9 +143,26 @@ namespace SampleD2L.Chapter02Preliminaries {
             // x = torch.tensor([1.0, 2, 4, 8])
             // y = torch.tensor([2, 2, 2, 2])
             // x + y, x - y, x * y, x / y, x ** y  # **运算符是求幂运算
+            //(tensor([ 3.,  4.,  6., 10.]),
+            // tensor([-1.,  0.,  2.,  6.]),
+            // tensor([ 2.,  4.,  8., 16.]),
+            // tensor([0.5000, 1.0000, 2.0000, 4.0000]),
+            // tensor([ 1.,  4., 16., 64.]))
+            //x = TTorch.FromNDArray<float>(new float[] { 1.0f, 2, 4, 8 });
+            x = TTorch.FromNDArray([1.0f, 2, 4, 8]);
+            var y = TTorch.FromNDArray([2.0f, 2, 2, 2]);
+            //writer.WriteLine("x + y: {0}", Tensor.Add(x, y).ToString()); // CS1503 Argument 1: cannot convert from 'System.Numerics.Tensors.Tensor<float>' to 'in System.Numerics.Tensors.ReadOnlyTensorSpan<System.Numerics.Tensors.Tensor<float>>'	
+            writer.WriteLine("x + y: {0}", Tensor.Add(x.AsReadOnlyTensorSpan(), y).ToString());
+            writer.WriteLine("x - y: {0}", Tensor.Subtract(x.AsReadOnlyTensorSpan(), y).ToString());
+            writer.WriteLine("x * y: {0}", Tensor.Multiply(x.AsReadOnlyTensorSpan(), y).ToString());
+            writer.WriteLine("x / y: {0}", Tensor.Divide(x.AsReadOnlyTensorSpan(), y).ToString());
+            writer.WriteLine("x ** y: {0}", Tensor.Pow(x.AsReadOnlyTensorSpan(), y).ToString());
+
             // (**“按元素”方式可以应用更多的计算**)，包括像求幂这样的一元运算符。
             // 
             // torch.exp(x)
+            writer.WriteLine("exp: {0}", Tensor.Exp(x.AsReadOnlyTensorSpan()).ToString());
+
             // 除了按元素计算外，我们还可以执行线性代数运算，包括向量点积和矩阵乘法。
             // 我们将在 :numref:`sec_linear-algebra`中解释线性代数的重点内容。
             // [**我们也可以把多个张量*连结*（concatenate）在一起**]，
@@ -159,12 +176,32 @@ namespace SampleD2L.Chapter02Preliminaries {
             // X = torch.arange(12, dtype=torch.float32).reshape((3,4))
             // Y = torch.tensor([[2.0, 1, 4, 3], [1, 2, 3, 4], [4, 3, 2, 1]])
             // torch.cat((X, Y), dim=0), torch.cat((X, Y), dim=1)
+            //(tensor([[ 0.,  1.,  2.,  3.],
+            //         [ 4.,  5.,  6.,  7.],
+            //         [ 8.,  9., 10., 11.],
+            //         [ 2.,  1.,  4.,  3.],
+            //         [ 1.,  2.,  3.,  4.],
+            //         [ 4.,  3.,  2.,  1.]]),
+            // tensor([[ 0.,  1.,  2.,  3.,  2.,  1.,  4.,  3.],
+            //         [ 4.,  5.,  6.,  7.,  1.,  2.,  3.,  4.],
+            //         [ 8.,  9., 10., 11.,  4.,  3.,  2.,  1.]]))
+            X = TTorch.Arange(12.0f).Reshape([3, 4]);
+            var Y = TTorch.FromNDArray(new float[,] { { 2.0f, 1, 4, 3 }, { 1, 2, 3, 4 }, { 4, 3, 2, 1 } });
+            writer.WriteLine("Concatenate: {0}", Tensor.Concatenate([X, Y]).ToString());
+            writer.WriteLine("Concatenate(1): {0}", Tensor.ConcatenateOnDimension(1, [X, Y]).ToString());
+            writer.WriteLine("Stack: {0}", Tensor.Stack([X, Y]).ToString()); // Result is X copy 2. Bug?
+
             // 有时，我们想[**通过*逻辑运算符*构建二元张量**]。
             // 以`X == Y`为例：
             // 对于每个位置，如果`X`和`Y`在该位置相等，则新张量中相应项的值为1。
             // 这意味着逻辑语句`X == Y`在该位置处为真，否则该位置为0。
             // 
             // X == Y
+            //tensor([[False,  True, False,  True],
+            //        [False, False, False, False],
+            //        [False, False, False, False]])
+            writer.WriteLine("X == Y: {0}", Tensor.Equals(X.AsReadOnlyTensorSpan(), Y).ToString());
+
             // [**对张量中的所有元素进行求和，会产生一个单元素张量。**]
             // 
             // X.sum()
