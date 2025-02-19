@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SampleD2L.Chapter02Preliminaries {
+namespace Zyl.SampleD2L.Chapter02Preliminaries {
     internal class Ch02 {
         public static void Output(TextWriter writer) {
             writer.WriteLine("## Chapter2 Preliminaries");

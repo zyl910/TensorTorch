@@ -14,7 +14,7 @@ namespace Zyl.TensorTorch {
     /// <summary>
     /// Tensor Torch util (张量 Torch 工具).
     /// </summary>
-    public static class TTorch {
+    public static partial class TTorch {
 
         // -- torch.arange(start=0, end, step=1, out=None, dtype=None, layout=torch.strided, device=None, requires_grad=False)
 

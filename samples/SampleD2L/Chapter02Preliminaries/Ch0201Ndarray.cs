@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics.Tensors;
@@ -6,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Zyl.TensorTorch;
 
-namespace SampleD2L.Chapter02Preliminaries {
+namespace Zyl.SampleD2L.Chapter02Preliminaries {
     internal class Ch0201Ndarray {
 #pragma warning disable SYSLIB5001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
 
@@ -205,6 +206,8 @@ namespace SampleD2L.Chapter02Preliminaries {
             // [**对张量中的所有元素进行求和，会产生一个单元素张量。**]
             // 
             // X.sum()
+            writer.WriteLine("sum: {0}", Tensor.Sum(X.AsReadOnlyTensorSpan()));
+
             // ## 广播机制
             // :label:`subsec_broadcasting`
             // 在上面的部分中，我们看到了如何在相同形状的两个张量上执行按元素操作。
@@ -218,11 +221,25 @@ namespace SampleD2L.Chapter02Preliminaries {
             // a = torch.arange(3).reshape((3, 1))
             // b = torch.arange(2).reshape((1, 2))
             // a, b
+            //(tensor([[0],
+            //         [1],
+            //         [2]]),
+            // tensor([[0, 1]]))
+            var a = TTorch.Arange(3.0f).Reshape([3, 1]);
+            var b = TTorch.Arange(2.0f).Reshape([1, 2]);
+            writer.WriteLine("a: {0}", a.ToString());
+            writer.WriteLine("b: {0}", b.ToString());
+
             // 由于`a`和`b`分别是$3\times1$和$1\times2$矩阵，如果让它们相加，它们的形状不匹配。
             // 我们将两个矩阵*广播*为一个更大的$3\times2$矩阵，如下所示：矩阵`a`将复制列，
             // 矩阵`b`将复制行，然后再按元素相加。
             // 
             // a + b
+            // tensor([[0, 1],
+            //         [1, 2],
+            //         [2, 3]])
+            writer.WriteLine("a + b: {0}", Tensor.Add(a.AsReadOnlyTensorSpan(), b).ToString());
+
             // ## 索引和切片
             // 就像在任何其他Python数组中一样，张量中的元素可以通过索引访问。
             // 与任何Python数组一样：第一个元素的索引是0，最后一个元素索引是-1；
@@ -230,16 +247,34 @@ namespace SampleD2L.Chapter02Preliminaries {
             // 如下所示，我们[**可以用`[-1]`选择最后一个元素，可以用`[1:3]`选择第二个和第三个元素**]：
             // 
             // X[-1], X[1:3]
+            //writer.WriteLine("X[-1]: Slice={0}", X.Slice([^1]).ToString()); // Need rank equals - System.ArgumentOutOfRangeException: Number of dimensions to slice does not equal the number of dimensions in the span (Parameter 'start')
+            //writer.WriteLine("X[-1]: Slice={0}", X.Slice([^1, 0]).ToString()); // OK
+            //writer.WriteLine("X[-1]: {0}", X[^1.., ..].ToString()); // OK
+            writer.WriteLine("X[-1]: SliceTorch={0}", X.SliceTorch(^1).ToString());
+            writer.WriteLine("X[1:3]: SliceTorch={0}", X.SliceTorch(1..3).ToString());
+
             // [**除读取外，我们还可以通过指定索引来将元素写入矩阵。**]
             // 
             // X[1, 2] = 9
             // X
+            X[1, 2] = 9;
+            writer.WriteLine("Set X[1, 2]: {0}", X.ToString());
+
             // 如果我们想[**为多个元素赋值相同的值，我们只需要索引所有元素，然后为它们赋值。**]
             // 例如，`[0:2, :]`访问第1行和第2行，其中“:”代表沿轴1（列）的所有元素。
             // 虽然我们讨论的是矩阵的索引，但这也适用于向量和超过2个维度的张量。
             // 
             // X[0:2, :] = 12
             // X
+            //X[0..2, ..].Fill(12); // Its Copy.
+            //var X2 = X[0..2, ..]; X2.Fill(12); // Its Copy.
+            //writer.WriteLine("Set X[0:2, :] copy: {0}", X2.ToString());
+            //X.AsTensorSpan()[0..2, ..].Fill(12); // Bug! Fill all elements.
+            //X.AsTensorSpan()[0..2, ..].FillRange(12); // OK
+            //X.AsTensorSpan().FillRange(12, 0..2, ..); // OK
+            X.FillRange(12, 0..2, ..);
+            writer.WriteLine("Set X[0:2, :]: {0}", X.ToString());
+
             // ## 节省内存
             // [**运行一些操作可能会导致为新结果分配内存**]。
             // 例如，如果我们用`Y = X + Y`，我们将取消引用`Y`指向的张量，而是指向新分配的内存处的张量。
@@ -251,6 +286,10 @@ namespace SampleD2L.Chapter02Preliminaries {
             // before = id(Y)
             // Y = Y + X
             // id(Y) == before
+            var before = Y;
+            Y = Tensor.Add(Y.AsReadOnlyTensorSpan(), X);
+            writer.WriteLine("ReferenceEquals: {0}", object.ReferenceEquals(before, Y));
+
             // 这可能是不可取的，原因有两个：
             // 1. 首先，我们不想总是不必要地分配内存。在机器学习中，我们可能有数百兆的参数，并且在一秒内多次更新所有参数。通常情况下，我们希望原地执行这些更新；
             // 2. 如果我们不原地更新，其他引用仍然会指向旧的内存位置，这样我们的某些代码可能会无意中引用旧的参数。
@@ -264,12 +303,20 @@ namespace SampleD2L.Chapter02Preliminaries {
             // print('id(Z):', id(Z))
             // Z[:] = X + Y
             // print('id(Z):', id(Z))
+            var Z = Tensor.CreateUninitialized<float>(Y.Lengths);
+            Tensor.Add(Y.AsReadOnlyTensorSpan(), X, Z); // Z[:] = X + Y
+            writer.WriteLine("Z: {0}", Z.ToString());
+
             // [**如果在后续计算中没有重复使用`X`，
             // 我们也可以使用`X[:] = X + Y`或`X += Y`来减少操作的内存开销。**]
             // 
             // before = id(X)
             // X += Y
             // id(X) == before
+            before = X;
+            Tensor.Add(X.AsReadOnlyTensorSpan(), Y, X);
+            writer.WriteLine("ReferenceEquals: {0}", object.ReferenceEquals(before, X));
+
             // ## 转换为其他Python对象
             // 
             // 将深度学习框架定义的张量[**转换为NumPy张量（`ndarray`）**]很容易，反之也同样容易。
@@ -282,6 +329,10 @@ namespace SampleD2L.Chapter02Preliminaries {
             // 
             // a = torch.tensor([3.5])
             // a, a.item(), float(a), int(a)
+            a = TTorch.FromNDArray([3.5f]);
+            //writer.WriteLine("Scalar: {0}", a[0]);
+            writer.WriteLine("Scalar: {0}", a.GetPinnableReference());
+
             // ## 小结
             // * 深度学习存储和操作数据的主要接口是张量（$n$维数组）。它提供了各种功能，包括基本数学运算、广播、索引、切片、内存节省和转换其他Python对象。
             // ## 练习
