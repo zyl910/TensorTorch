@@ -24,7 +24,7 @@ namespace Zyl.TensorTorch {
         /// <typeparam name="T">The element type (元素类型).</typeparam>
         /// <param name="end">The ending value of the range, exclusive. This parameter is required.</param>
         /// <param name="pinned">A Boolean whether the underlying data should be pinned or not (一个布尔值，表示是否应固定基础数据).</param>
-        /// <returns>Returns new Tensor.</returns>
+        /// <returns>Returns new Tensor (返回新张量).</returns>
         public static Tensor<T> Arange<T>(T end, bool pinned = false) where T : INumberBase<T> {
             return Arange(T.Zero, end, T.One, pinned);
         }
@@ -36,7 +36,7 @@ namespace Zyl.TensorTorch {
         /// <param name="start">The starting value of the range, inclusive. Defaults to 0.</param>
         /// <param name="end">The ending value of the range, exclusive. This parameter is required.</param>
         /// <param name="pinned">A Boolean whether the underlying data should be pinned or not (一个布尔值，表示是否应固定基础数据).</param>
-        /// <returns>Returns new Tensor.</returns>
+        /// <returns>Returns new Tensor (返回新张量).</returns>
         public static Tensor<T> Arange<T>(T start, T end, bool pinned = false) where T : INumberBase<T> {
             return Arange(start, end, T.One, pinned);
         }
@@ -49,7 +49,7 @@ namespace Zyl.TensorTorch {
         /// <param name="end">The ending value of the range, exclusive. This parameter is required.</param>
         /// <param name="step">The difference between each consecutive value in the range. The default value is 1.</param>
         /// <param name="pinned">A Boolean whether the underlying data should be pinned or not (一个布尔值，表示是否应固定基础数据).</param>
-        /// <returns>Returns new Tensor.</returns>
+        /// <returns>Returns new Tensor (返回新张量).</returns>
         public static Tensor<T> Arange<T>(T start, T end, T step, bool pinned = false) where T : INumberBase<T> {
             nint cnt = GetRangeCount(start, end, step);
             Span<nint> lengths = [cnt];
@@ -71,7 +71,7 @@ namespace Zyl.TensorTorch {
         /// <param name="value">Given value (指定值).</param>
         /// <param name="lengths">A <see cref="ReadOnlySpan{T}"/> indicating the lengths of each dimension (表示每个维度的长度).</param>
         /// <param name="pinned">A Boolean whether the underlying data should be pinned or not (一个布尔值，表示是否应固定基础数据).</param>
-        /// <returns>Returns new Tensor.</returns>
+        /// <returns>Returns new Tensor (返回新张量).</returns>
         public static Tensor<T> CreateAndFill<T>(T value, ReadOnlySpan<IntPtr> lengths, bool pinned = false) {
             Tensor<T> rt = Tensor.CreateUninitialized<T>(lengths, pinned);
             rt.Fill(value);
@@ -100,7 +100,7 @@ namespace Zyl.TensorTorch {
         /// <typeparam name="T">The element type (元素类型).</typeparam>
         /// <param name="values">Souce values (源值).</param>
         /// <param name="pinned">A Boolean whether the underlying data should be pinned or not (一个布尔值，表示是否应固定基础数据).</param>
-        /// <returns>Returns new Tensor.</returns>
+        /// <returns>Returns new Tensor (返回新张量).</returns>
         public static Tensor<T> FromNDArray<T>(T[] values, bool pinned = false) {
             var tensorSpan = new TensorSpan<T>(values);
             Tensor<T> rt = Tensor.Create<T>(tensorSpan.Lengths, pinned);
@@ -114,7 +114,7 @@ namespace Zyl.TensorTorch {
         /// <typeparam name="T">The element type (元素类型).</typeparam>
         /// <param name="values">Souce values (源值).</param>
         /// <param name="pinned">A Boolean whether the underlying data should be pinned or not (一个布尔值，表示是否应固定基础数据).</param>
-        /// <returns>Returns new Tensor.</returns>
+        /// <returns>Returns new Tensor (返回新张量).</returns>
         public static Tensor<T> FromNDArray<T>(T[,] values, bool pinned = false) {
             var tensorSpan = new TensorSpan<T>(values);
             Tensor<T> rt = Tensor.Create<T>(tensorSpan.Lengths, pinned);
@@ -128,7 +128,7 @@ namespace Zyl.TensorTorch {
         /// <typeparam name="T">The element type (元素类型).</typeparam>
         /// <param name="values">Souce values (源值).</param>
         /// <param name="pinned">A Boolean whether the underlying data should be pinned or not (一个布尔值，表示是否应固定基础数据).</param>
-        /// <returns>Returns new Tensor.</returns>
+        /// <returns>Returns new Tensor (返回新张量).</returns>
         public static Tensor<T> FromNDArray<T>(T[,,] values, bool pinned = false) {
             var tensorSpan = new TensorSpan<T>(values);
             Tensor<T> rt = Tensor.Create<T>(tensorSpan.Lengths, pinned);
@@ -142,7 +142,7 @@ namespace Zyl.TensorTorch {
         /// <typeparam name="T">The element type (元素类型).</typeparam>
         /// <param name="values">Souce values (源值).</param>
         /// <param name="pinned">A Boolean whether the underlying data should be pinned or not (一个布尔值，表示是否应固定基础数据).</param>
-        /// <returns>Returns new Tensor.</returns>
+        /// <returns>Returns new Tensor (返回新张量).</returns>
         public static Tensor<T> FromNDArray<T>(T[,,,] values, bool pinned = false) {
             var tensorSpan = new TensorSpan<T>(values);
             Tensor<T> rt = Tensor.Create<T>(tensorSpan.Lengths, pinned);
@@ -156,7 +156,7 @@ namespace Zyl.TensorTorch {
         /// <typeparam name="T">The element type (元素类型).</typeparam>
         /// <param name="values">Souce values (源值).</param>
         /// <param name="pinned">A Boolean whether the underlying data should be pinned or not (一个布尔值，表示是否应固定基础数据).</param>
-        /// <returns>Returns new Tensor.</returns>
+        /// <returns>Returns new Tensor (返回新张量).</returns>
         public static Tensor<T> FromNDArray<T>(Array values, bool pinned = false) {
             var tensorSpan = new TensorSpan<T>(values);
             Tensor<T> rt = Tensor.Create<T>(tensorSpan.Lengths, pinned);
@@ -172,7 +172,7 @@ namespace Zyl.TensorTorch {
         /// <typeparam name="T">The element type (元素类型).</typeparam>
         /// <param name="lengths">A <see cref="ReadOnlySpan{T}"/> indicating the lengths of each dimension (表示每个维度的长度).</param>
         /// <param name="pinned">A Boolean whether the underlying data should be pinned or not (一个布尔值，表示是否应固定基础数据).</param>
-        /// <returns>Returns new Tensor.</returns>
+        /// <returns>Returns new Tensor (返回新张量).</returns>
         public static Tensor<T> Ones<T>(ReadOnlySpan<IntPtr> lengths, bool pinned = false) where T : INumberBase<T> {
             return CreateAndFill(T.One, lengths, pinned);
         }
@@ -218,9 +218,44 @@ namespace Zyl.TensorTorch {
         /// <typeparam name="T">The element type (元素类型).</typeparam>
         /// <param name="lengths">A <see cref="ReadOnlySpan{T}"/> indicating the lengths of each dimension (表示每个维度的长度).</param>
         /// <param name="pinned">A Boolean whether the underlying data should be pinned or not (一个布尔值，表示是否应固定基础数据).</param>
-        /// <returns>Returns new Tensor.</returns>
+        /// <returns>Returns new Tensor (返回新张量).</returns>
         public static Tensor<T> Zeros<T>(ReadOnlySpan<IntPtr> lengths, bool pinned = false) {
             return Tensor.Create<T>(lengths, pinned);
+        }
+
+        // -- torch.zeros_like(input, *, dtype=None, layout=None, device=None, requires_grad=False, memory_format=torch.preserve_format)
+
+        /// <summary>
+        /// Returns a tensor filled with the scalar value 0, with the same size as <paramref name="input"/> (返回一个填充了标量值0的张量，其大小与 <paramref name="input"/> 相同).
+        /// </summary>
+        /// <typeparam name="T">The element type (元素类型).</typeparam>
+        /// <param name="input">Input tensor (输入张量).</param>
+        /// <param name="pinned">A Boolean whether the underlying data should be pinned or not (一个布尔值，表示是否应固定基础数据).</param>
+        /// <returns>Returns new Tensor (返回新张量).</returns>
+        public static Tensor<T> ZerosLike<T>(Tensor<T> input, bool pinned = false) {
+            return Tensor.Create<T>(input.Lengths, pinned);
+        }
+
+        /// <summary>
+        /// Returns a tensor filled with the scalar value 0, with the same size as <paramref name="input"/> (返回一个填充了标量值0的张量，其大小与 <paramref name="input"/> 相同).
+        /// </summary>
+        /// <typeparam name="T">The element type (元素类型).</typeparam>
+        /// <param name="input">Input tensor (输入张量).</param>
+        /// <param name="pinned">A Boolean whether the underlying data should be pinned or not (一个布尔值，表示是否应固定基础数据).</param>
+        /// <returns>Returns new Tensor (返回新张量).</returns>
+        public static Tensor<T> ZerosLike<T>(in TensorSpan<T> input, bool pinned = false) {
+            return Tensor.Create<T>(input.Lengths, pinned);
+        }
+
+        /// <summary>
+        /// Returns a tensor filled with the scalar value 0, with the same size as <paramref name="input"/> (返回一个填充了标量值0的张量，其大小与 <paramref name="input"/> 相同).
+        /// </summary>
+        /// <typeparam name="T">The element type (元素类型).</typeparam>
+        /// <param name="input">Input tensor (输入张量).</param>
+        /// <param name="pinned">A Boolean whether the underlying data should be pinned or not (一个布尔值，表示是否应固定基础数据).</param>
+        /// <returns>Returns new Tensor (返回新张量).</returns>
+        public static Tensor<T> ZerosLike<T>(in ReadOnlyTensorSpan<T> input, bool pinned = false) {
+            return Tensor.Create<T>(input.Lengths, pinned);
         }
 
     }

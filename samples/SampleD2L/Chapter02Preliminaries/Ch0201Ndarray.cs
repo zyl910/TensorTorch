@@ -56,6 +56,7 @@ namespace Zyl.SampleD2L.Chapter02Preliminaries {
             // x.shape
             //torch.Size([12])
             writer.WriteLine("shape: Lengths={0}", TTorch.ToString(x.Lengths));
+            writer.WriteLine("stride: {0}", TTorch.ToString(x.Strides));
 
             // 如果只想知道张量中元素的总数，即形状的所有元素乘积，可以检查它的大小（size）。
             // 因为这里在处理的是一个向量，所以它的`shape`与它的`size`相同。
@@ -75,8 +76,9 @@ namespace Zyl.SampleD2L.Chapter02Preliminaries {
             //tensor([[ 0,  1,  2,  3],
             //        [ 4,  5,  6,  7],
             //        [ 8,  9, 10, 11]])
-            var X = x.Reshape([3, 4]);
+            var X = x.Reshape(3, 4);
             writer.WriteLine("reshape: {0}", X.ToString());
+            writer.WriteLine("stride: {0}", TTorch.ToString(X.Strides));
 
             // 我们不需要通过手动指定每个维度来改变形状。
             // 也就是说，如果我们的目标形状是（高度,宽度），
@@ -84,8 +86,9 @@ namespace Zyl.SampleD2L.Chapter02Preliminaries {
             // 在上面的例子中，为了获得一个3行的矩阵，我们手动指定了它有3行和4列。
             // 幸运的是，我们可以通过`-1`来调用此自动计算出维度的功能。
             // 即我们可以用`x.reshape(-1,4)`或`x.reshape(3,-1)`来取代`x.reshape(3,4)`。
-            writer.WriteLine("reshape(-1,4): {0}", x.Reshape([-1, 4]).ToString());
-            //writer.WriteLine("reshape(-1,5): {0}", x.Reshape([-1, 5]).ToString()); // System.ArgumentException: Provided dimensions are not valid for reshaping
+            writer.WriteLine("reshape(-1,4): {0}", x.Reshape(-1, 4).ToString());
+            //writer.WriteLine("reshape(-1,5): {0}", x.Reshape(-1, 5).ToString()); // System.ArgumentException: Provided dimensions are not valid for reshaping
+            writer.WriteLine("stride: {0}", TTorch.ToString(X.Strides));
 
             // 有时，我们希望[**使用全0、全1、其他常量，或者从特定分布中随机采样的数字**]来初始化矩阵。
             // 我们可以创建一个形状为（2,3,4）的张量，其中所有元素都设置为0。代码如下：
@@ -93,6 +96,7 @@ namespace Zyl.SampleD2L.Chapter02Preliminaries {
             // torch.zeros((2, 3, 4))
             //writer.WriteLine("zeros: {0}", Tensor.Create<int>([2, 3, 4]).ToString());
             writer.WriteLine("zeros: {0}", TTorch.Zeros<int>([2, 3, 4]).ToString());
+            writer.WriteLine("stride: {0}", TTorch.ToString(TTorch.Zeros<int>([2, 3, 4]).Strides));
 
             // 同样，我们可以创建一个形状为`(2,3,4)`的张量，其中所有元素都设置为1。代码如下：
             // 
@@ -186,7 +190,7 @@ namespace Zyl.SampleD2L.Chapter02Preliminaries {
             // tensor([[ 0.,  1.,  2.,  3.,  2.,  1.,  4.,  3.],
             //         [ 4.,  5.,  6.,  7.,  1.,  2.,  3.,  4.],
             //         [ 8.,  9., 10., 11.,  4.,  3.,  2.,  1.]]))
-            X = TTorch.Arange(12.0f).Reshape([3, 4]);
+            X = TTorch.Arange(12.0f).Reshape(3, 4);
             var Y = TTorch.FromNDArray(new float[,] { { 2.0f, 1, 4, 3 }, { 1, 2, 3, 4 }, { 4, 3, 2, 1 } });
             writer.WriteLine("Concatenate: {0}", Tensor.Concatenate([X, Y]).ToString());
             writer.WriteLine("Concatenate(1): {0}", Tensor.ConcatenateOnDimension(1, [X, Y]).ToString());
@@ -225,8 +229,8 @@ namespace Zyl.SampleD2L.Chapter02Preliminaries {
             //         [1],
             //         [2]]),
             // tensor([[0, 1]]))
-            var a = TTorch.Arange(3.0f).Reshape([3, 1]);
-            var b = TTorch.Arange(2.0f).Reshape([1, 2]);
+            var a = TTorch.Arange(3.0f).Reshape(3, 1);
+            var b = TTorch.Arange(2.0f).Reshape(1, 2);
             writer.WriteLine("a: {0}", a.ToString());
             writer.WriteLine("b: {0}", b.ToString());
 
@@ -303,7 +307,8 @@ namespace Zyl.SampleD2L.Chapter02Preliminaries {
             // print('id(Z):', id(Z))
             // Z[:] = X + Y
             // print('id(Z):', id(Z))
-            var Z = Tensor.CreateUninitialized<float>(Y.Lengths);
+            //var Z = Tensor.CreateUninitialized<float>(Y.Lengths); // OK
+            var Z = TTorch.ZerosLike(Y);
             Tensor.Add(Y.AsReadOnlyTensorSpan(), X, Z); // Z[:] = X + Y
             writer.WriteLine("Z: {0}", Z.ToString());
 

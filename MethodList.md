@@ -20,17 +20,17 @@ Extension Methods:
 
 Member of torch (torch 的成员).
 
-| PyTorch | .NET                                     | Remark |
-| ------- | ---------------------------------------- | ------ |
-| arange  | TTorch.Arange                            |        |
-| cat     | Tensor.Concatenate, Tensor.ConcatenateOnDimension |        |
-| exp     | Tensor.Exp                               |        |
-| ones    | TTorch.Ones                              |        |
-| randn   | Tensor.CreateAndFillGaussianNormalDistribution |        |
-| sum     | Tensor.Sum                               |        |
-| tensor  | TTorch.FromNDArray                       |        |
-| zeros   | TTorch.Zeros                             |        |
-|         |                                          |        |
+| PyTorch    | .NET                                     | Remark |
+| ---------- | ---------------------------------------- | ------ |
+| arange     | TTorch.Arange                            |        |
+| cat        | Tensor.Concatenate, Tensor.ConcatenateOnDimension |        |
+| exp        | Tensor.Exp                               |        |
+| ones       | TTorch.Ones                              |        |
+| randn      | Tensor.CreateAndFillGaussianNormalDistribution |        |
+| sum        | Tensor.Sum                               |        |
+| tensor     | TTorch.FromNDArray                       |        |
+| zeros      | TTorch.Zeros                             |        |
+| zeros_like | TTorch.ZerosLike                         |        |
 
 Member of  tensor object (张量对象的成员).
 
@@ -44,6 +44,7 @@ Member of  tensor object (张量对象的成员).
 | x.numel      | x.FlattenedLength        |                                          |
 | x.reshape    | x.Reshape                |                                          |
 | x.shape      | x.Lengths                |                                          |
+| x.stride     | X.Strides                |                                          |
 
 Operator (运算符).
 
