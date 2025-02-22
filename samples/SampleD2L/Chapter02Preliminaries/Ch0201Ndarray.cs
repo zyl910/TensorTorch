@@ -123,6 +123,16 @@ namespace Zyl.SampleD2L.Chapter02Preliminaries {
             writer.WriteLine("tensor 2D: {0}", TTorch.FromNDArray<int>(new int[,] { { 2, 1, 4, 3 }, { 1, 2, 3, 4 }, { 4, 3, 2, 1 } }).ToString());
             writer.WriteLine("tensor 3D: {0}", TTorch.FromNDArray<int>(new int[,,] { { { 2, 1 }, { 4, 3 } }, { { 1, 2 }, { 3, 4 } }, { { 4, 3 }, { 2, 1 } } }).ToString());
 
+            // ToNDArray
+            Array array = X.ToNDArray();
+            writer.WriteLine("ToNDArray: {0}", array);
+            x = TTorch.FromNDArray<float>(array);
+            writer.WriteLine("FromNDArray: {0}", x.ToString());
+            writer.WriteLine("EqualsAll: {0}", Tensor.EqualsAll(X.AsReadOnlyTensorSpan(), x));
+            array = X.To1DArray();
+            writer.WriteLine("To1DArray: {0}", array);
+            writer.WriteLine("To2DArray: {0}", X.To2DArray());
+
             // ## 运算符
             // 我们的兴趣不仅限于读取数据和写入数据。
             // 我们想在这些数据上执行数学运算，其中最简单且最有用的操作是*按元素*（elementwise）运算。

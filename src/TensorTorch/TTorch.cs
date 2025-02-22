@@ -95,7 +95,7 @@ namespace Zyl.TensorTorch {
         // -- torch.tensor([[2, 1, 4, 3], [1, 2, 3, 4], [4, 3, 2, 1]])
 
         /// <summary>
-        /// Create tensor based on 1D array (根据1维数组创建张量). Like `torch.tensor`.
+        /// Create tensor by 1D array (根据1维数组创建张量). Like `torch.tensor`.
         /// </summary>
         /// <typeparam name="T">The element type (元素类型).</typeparam>
         /// <param name="values">Souce values (源值).</param>
@@ -109,7 +109,7 @@ namespace Zyl.TensorTorch {
         }
 
         /// <summary>
-        /// Create tensor based on 2D array (根据2维数组创建张量). Like `torch.tensor`.
+        /// Create tensor by 2D array (根据2维数组创建张量). Like `torch.tensor`.
         /// </summary>
         /// <typeparam name="T">The element type (元素类型).</typeparam>
         /// <param name="values">Souce values (源值).</param>
@@ -123,7 +123,7 @@ namespace Zyl.TensorTorch {
         }
 
         /// <summary>
-        /// Create tensor based on 3D array (根据3维数组创建张量). Like `torch.tensor`.
+        /// Create tensor by 3D array (根据3维数组创建张量). Like `torch.tensor`.
         /// </summary>
         /// <typeparam name="T">The element type (元素类型).</typeparam>
         /// <param name="values">Souce values (源值).</param>
@@ -137,7 +137,7 @@ namespace Zyl.TensorTorch {
         }
 
         /// <summary>
-        /// Create tensor based on 4D array (根据4维数组创建张量). Like `torch.tensor`.
+        /// Create tensor by 4D array (根据4维数组创建张量). Like `torch.tensor`.
         /// </summary>
         /// <typeparam name="T">The element type (元素类型).</typeparam>
         /// <param name="values">Souce values (源值).</param>
@@ -151,7 +151,7 @@ namespace Zyl.TensorTorch {
         }
 
         /// <summary>
-        /// Create tensor based on ND array (根据N维数组创建张量). Like `torch.tensor`.
+        /// Create tensor by N-dimensional array (根据N维数组创建张量). Like `torch.tensor`.
         /// </summary>
         /// <typeparam name="T">The element type (元素类型).</typeparam>
         /// <param name="values">Souce values (源值).</param>
@@ -226,7 +226,7 @@ namespace Zyl.TensorTorch {
         // -- torch.zeros_like(input, *, dtype=None, layout=None, device=None, requires_grad=False, memory_format=torch.preserve_format)
 
         /// <summary>
-        /// Returns a tensor filled with the scalar value 0, with the same size as <paramref name="input"/> (返回一个填充了标量值0的张量，其大小与 <paramref name="input"/> 相同).
+        /// Returns a tensor filled with the scalar value 0, with the same size as <paramref name="input"/> (返回一个填充了标量值0的张量，其大小与 <paramref name="input"/> 相同). Like `torch.zeros_like`.
         /// </summary>
         /// <typeparam name="T">The element type (元素类型).</typeparam>
         /// <param name="input">Input tensor (输入张量).</param>

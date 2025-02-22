@@ -49,7 +49,7 @@ namespace Zyl.TensorTorch {
         private static void FillRange_Core<T>(this Tensor<T> source, T value, scoped ReadOnlySpan<NRange> ranges, scoped ReadOnlySpan<nint> lengths, int level, scoped Span<nint> indices) {
             int rank = lengths.Length;
             NRange range = ranges[level];
-            (nint offset, nint length) = range.GetOffsetAndLength(lengths[level]);
+           (nint offset, nint length) = range.GetOffsetAndLength(lengths[level]);
             nint offsetEnd = offset + length;
             int levelNext = level + 1;
             if (levelNext < rank) {
@@ -103,7 +103,7 @@ namespace Zyl.TensorTorch {
         private static void FillRange_Core<T>(this in TensorSpan<T> source, T value, scoped ReadOnlySpan<NRange> ranges, scoped ReadOnlySpan<nint> lengths, int level, scoped Span<nint> indices) {
             int rank = lengths.Length;
             NRange range = ranges[level];
-            (nint offset, nint length) = range.GetOffsetAndLength(lengths[level]);
+           (nint offset, nint length) = range.GetOffsetAndLength(lengths[level]);
             nint offsetEnd = offset + length;
             int levelNext = level + 1;
             if (levelNext < rank) {
@@ -370,6 +370,106 @@ namespace Zyl.TensorTorch {
                 start2[i] = NIndex.Start;
             }
             return source.Slice(start2);
+        }
+
+        /// <inheritdoc cref="To1DArray{T}(in ReadOnlyTensorSpan{T})"/>
+        public static T[] To1DArray<T>(this Tensor<T> source) {
+            return To1DArray(source.AsReadOnlyTensorSpan());
+        }
+
+        /// <summary>
+        /// Create 1-dimensional array by tensor. It can also convert N-dimensional tensor into 1-dimensional arrays (根据张量创建1维数组. 它还能将多维张量转为1维数组).
+        /// </summary>
+        /// <typeparam name="T">The element type (元素类型).</typeparam>
+        /// <param name="source">The source (源).</param>
+        /// <returns>Returns new array (返回新数组).</returns>
+        /// <seealso cref="ToNDArray{T}(in ReadOnlyTensorSpan{T})"/>
+        public static T[] To1DArray<T>(this in ReadOnlyTensorSpan<T> source) {
+            if (source.IsEmpty) {
+                return Array.Empty<T>();
+            }
+            ReadOnlySpan<nint> lengths = source.Lengths;
+            T[] rt = (T[])Array.CreateInstance(typeof(T), (long)source.FlattenedLength);
+            //TensorSpan<T> tensorSpan = new TensorSpan<T>(rt, ReadOnlySpan<int>.Empty, lengths, []);
+            TensorSpan<T> tensorSpan = new TensorSpan<T>(rt, ReadOnlySpan<int>.Empty, lengths, ReadOnlySpan<nint>.Empty);
+            source.CopyTo(tensorSpan);
+            return rt;
+        }
+
+        /// <inheritdoc cref="To2DArray{T}(in ReadOnlyTensorSpan{T})"/>
+        public static T[,] To2DArray<T>(this Tensor<T> source) {
+            return To2DArray(source.AsReadOnlyTensorSpan());
+        }
+
+        /// <summary>
+        /// Create 2-dimensional array by tensor. The rank of a tensor must be equal to 2 (根据张量创建2维数组. 张量的秩必须为 2).
+        /// </summary>
+        /// <typeparam name="T">The element type (元素类型).</typeparam>
+        /// <param name="source">The source (源).</param>
+        /// <returns>Returns new array (返回新数组).</returns>
+        /// <seealso cref="ToNDArray{T}(in ReadOnlyTensorSpan{T})"/>
+        public static T[,] To2DArray<T>(this in ReadOnlyTensorSpan<T> source) {
+            return (T[,])ToNDArray(source);
+        }
+
+        /// <inheritdoc cref="To3DArray{T}(in ReadOnlyTensorSpan{T})"/>
+        public static T[,,] To3DArray<T>(this Tensor<T> source) {
+            return To3DArray(source.AsReadOnlyTensorSpan());
+        }
+
+        /// <summary>
+        /// Create 3-dimensional array by tensor. The rank of a tensor must be equal to 3 (根据张量创建3维数组. 张量的秩必须为 3).
+        /// </summary>
+        /// <typeparam name="T">The element type (元素类型).</typeparam>
+        /// <param name="source">The source (源).</param>
+        /// <returns>Returns new array (返回新数组).</returns>
+        /// <seealso cref="ToNDArray{T}(in ReadOnlyTensorSpan{T})"/>
+        public static T[,,] To3DArray<T>(this in ReadOnlyTensorSpan<T> source) {
+            return (T[,,])ToNDArray(source);
+        }
+
+        /// <inheritdoc cref="To4DArray{T}(in ReadOnlyTensorSpan{T})"/>
+        public static T[,,,] To4DArray<T>(this Tensor<T> source) {
+            return To4DArray(source.AsReadOnlyTensorSpan());
+        }
+
+        /// <summary>
+        /// Create 4-dimensional array by tensor. The rank of a tensor must be equal to 4 (根据张量创建4维数组. 张量的秩必须为 4).
+        /// </summary>
+        /// <typeparam name="T">The element type (元素类型).</typeparam>
+        /// <param name="source">The source (源).</param>
+        /// <returns>Returns new array (返回新数组).</returns>
+        /// <seealso cref="ToNDArray{T}(in ReadOnlyTensorSpan{T})"/>
+        public static T[,,,] To4DArray<T>(this in ReadOnlyTensorSpan<T> source) {
+            return (T[,,,])ToNDArray(source);
+        }
+
+        /// <inheritdoc cref="ToNDArray{T}(in ReadOnlyTensorSpan{T})"/>
+        public static Array ToNDArray<T>(this Tensor<T> source) {
+            return ToNDArray(source.AsReadOnlyTensorSpan());
+        }
+
+        /// <summary>
+        /// Create N-dimensional array by tensor (根据张量创建N维数组).
+        /// </summary>
+        /// <typeparam name="T">The element type (元素类型).</typeparam>
+        /// <param name="source">The source (源).</param>
+        /// <returns>Returns new array (返回新数组).</returns>
+        /// <seealso cref="To1DArray{T}(in ReadOnlyTensorSpan{T})"/>
+        /// <seealso cref="To2DArray{T}(in ReadOnlyTensorSpan{T})"/>
+        /// <seealso cref="To3DArray{T}(in ReadOnlyTensorSpan{T})"/>
+        /// <seealso cref="To4DArray{T}(in ReadOnlyTensorSpan{T})"/>
+        public static Array ToNDArray<T>(this in ReadOnlyTensorSpan<T> source) {
+            if (source.IsEmpty) {
+                return Array.Empty<T>();
+            }
+            ReadOnlySpan<nint> lengths = source.Lengths;
+            long[] lengthsLong = new long[lengths.Length];
+            TensorPrimitives.ConvertChecked(lengths, lengthsLong.AsSpan());
+            Array rt = Array.CreateInstance(typeof(T), lengthsLong);
+            TensorSpan<T> tensorSpan = new TensorSpan<T>(rt);
+            source.CopyTo(tensorSpan);
+            return rt;
         }
 
     }
