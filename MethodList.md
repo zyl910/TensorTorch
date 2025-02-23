@@ -14,6 +14,7 @@ Methods:
 
 Extension Methods:
 
+- Clone: Returns a copy of source data (返回源数据的拷贝).
 - FillRange: Fills the contents of this ranges with the given value (用给定值填充此范围的内容).
 - SliceTorch: Forms a slice out of the given tensor. The parameters are similar to PyTorch (从给定的张量中形成一个切片. 参数与 PyTorch 相似).
 - To1DArray: Create 1-dimensional array by tensor. It can also convert N-dimensional tensor into 1-dimensional arrays (根据张量创建1维数组. 它还能将多维张量转为1维数组).
@@ -46,11 +47,13 @@ Member of  tensor object (张量对象的成员).
 | x[indices]   | x[indices]               | Get or set element (读写元素).               |
 | x[ranges]    | x.SliceTorch             | Slice (切片). The Slice method needs to have the same dimensions. And SliceTorch method is similar to PyTorch, allowe parameters to have fewer dimensions than they actually are (Slice 方法需要维度相同. 而 SliceTorch 方法类似 PyTorch，允许参数的维度比实际的少). |
 | x[ranges]=C  | `X.FillRange(C, ranges)` | Fill slice (填充切片). Or `X.AsTensorSpan()[ranges].FillRange(C)`. |
+| x.clone      | x.Clone                  | Clone(克隆).                               |
 | x.item       | x.GetPinnableReference   | To scalar (转为标量).                        |
 | x.numel      | x.FlattenedLength        | Flattened length (平整后的总长度).              |
 | x.reshape    | x.Reshape                | Reshape (变形).                            |
 | x.shape      | x.Lengths                | Lengths (各维的长度).                         |
 | x.stride     | X.Strides                | Strides (各维的跨距).                         |
+| x.T          | Tensor.Transpose         | Transpose (矩阵转置).                        |
 
 Operator (运算符).
 

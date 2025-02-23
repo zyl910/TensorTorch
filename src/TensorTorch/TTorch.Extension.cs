@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Numerics.Tensors;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,6 +12,40 @@ namespace Zyl.TensorTorch {
 #pragma warning disable SYSLIB5001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
 
     partial class TTorch {
+
+        // -- torch.clone(input, *, memory_format=torch.preserve_format)
+
+        /// <summary>
+        /// Returns a copy of source data (返回源数据的拷贝).
+        /// </summary>
+        /// <typeparam name="T">The element type (元素类型).</typeparam>
+        /// <param name="source">The source (源).</param>
+        /// <returns>Returns new Tensor (返回新张量).</returns>
+        public static Tensor<T> Clone<T>(this in ReadOnlyTensorSpan<T> source) {
+            Tensor<T> rt = Tensor.CreateUninitialized<T>(source.Lengths);
+            source.CopyTo(rt);
+            return rt;
+        }
+
+        /// <summary>
+        /// Returns a copy of source data (返回源数据的拷贝).
+        /// </summary>
+        /// <typeparam name="T">The element type (元素类型).</typeparam>
+        /// <param name="source">The source (源).</param>
+        /// <returns>Returns new Tensor (返回新张量).</returns>
+        public static Tensor<T> Clone<T>(this in TensorSpan<T> source) {
+            return Clone((ReadOnlyTensorSpan<T>)source);
+        }
+
+        /// <summary>
+        /// Returns a copy of source data (返回源数据的拷贝).
+        /// </summary>
+        /// <typeparam name="T">The element type (元素类型).</typeparam>
+        /// <param name="source">The source (源).</param>
+        /// <returns>Returns new Tensor (返回新张量).</returns>
+        public static Tensor<T> Clone<T>(this Tensor<T> source) {
+            return Clone(source.AsReadOnlyTensorSpan());
+        }
 
         /// <summary>
         /// Fills the contents of this ranges with the given value (用给定值填充此范围的内容).

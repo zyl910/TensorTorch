@@ -10,6 +10,7 @@ namespace Zyl.SampleD2L.Chapter02Preliminaries {
             writer.WriteLine("## Chapter2 Preliminaries");
             Ch0201Ndarray.Output(writer);
             Ch0202Pandas.Output(writer);
+            Ch0203LinearAlgebra.Output(writer);
             // done.
             writer.WriteLine();
         }

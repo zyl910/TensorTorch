@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics.Tensors;
 using System.Text;
 using System.Threading.Tasks;
+using Zyl.TensorTorch;
 
 namespace Zyl.SampleD2L.Chapter02Preliminaries {
     internal class Ch0203LinearAlgebra {
@@ -10,7 +12,11 @@ namespace Zyl.SampleD2L.Chapter02Preliminaries {
 
         public static void Output(TextWriter writer) {
             writer.WriteLine("### 2.3 LinearAlgebra");
+            Part1(writer);
+            Part2(writer);
+        }
 
+        public static void Part1(TextWriter writer) {
             // 线性代数
             // :label:sec_linear-algebra
             // 
@@ -51,6 +57,7 @@ namespace Zyl.SampleD2L.Chapter02Preliminaries {
             // ​
             // x + y, x * y, x / y, x**y
             // (tensor(5.), tensor(6.), tensor(1.5000), tensor(9.))
+
             // 向量
             // [向量可以被视为标量值组成的列表]。 这些标量值被称为向量的元素（element）或分量（component）。 当向量表示数据集中的样本时，它们的值具有一定的现实意义。 例如，如果我们正在训练一个模型来预测贷款违约风险，可能会将每个申请人与一个向量相关联， 其分量与其收入、工作年限、过往违约次数和其他因素相对应。 如果我们正在研究医院患者可能面临的心脏病发作风险，可能会用一个向量来表示每个患者， 其分量为最近的生命体征、胆固醇水平、每天运动时间等。 在数学表示法中，向量通常记为粗体、小写的符号 （例如，𝐱
             // 、𝐲
@@ -62,6 +69,9 @@ namespace Zyl.SampleD2L.Chapter02Preliminaries {
             // x = torch.arange(4)
             // x
             // tensor([0, 1, 2, 3])
+            var x = TTorch.Arange(4f);
+            writer.WriteLine("arange(4): {0}", x.ToString());
+
             // 我们可以使用下标来引用向量的任一元素，例如可以通过𝑥𝑖
             // 来引用第𝑖
             // 个元素。 注意，元素𝑥𝑖
@@ -76,6 +86,8 @@ namespace Zyl.SampleD2L.Chapter02Preliminaries {
             // 
             // x[3]
             // tensor(3)
+            writer.WriteLine("x[3]: {0}", x[3]);
+
             // 长度、维度和形状
             // 向量只是一个数字数组，就像每个数组都有一个长度一样，每个向量也是如此。 在数学表示法中，如果我们想说一个向量𝐱
             // 由𝑛
@@ -86,10 +98,14 @@ namespace Zyl.SampleD2L.Chapter02Preliminaries {
             // 
             // len(x)
             // 4
+            writer.WriteLine("len(x): FlattenedLength={0}", x.FlattenedLength);
+
             // 当用张量表示一个向量（只有一个轴）时，我们也可以通过.shape属性访问向量的长度。 形状（shape）是一个元素组，列出了张量沿每个轴的长度（维数）。 对于(只有一个轴的张量，形状只有一个元素。)
             // 
             // x.shape
             // torch.Size([4])
+            writer.WriteLine("shape: Lengths={0}", TTorch.ToString(x.Lengths));
+
             // 请注意，维度（dimension）这个词在不同上下文时往往会有不同的含义，这经常会使人感到困惑。 为了清楚起见，我们在此明确一下： 向量或轴的维度被用来表示向量或轴的长度，即向量或轴的元素数量。 然而，张量的维度用来表示张量具有的轴数。 在这个意义上，张量的某个轴的维数就是这个轴的长度。
             // 
             // 矩阵
@@ -130,11 +146,12 @@ namespace Zyl.SampleD2L.Chapter02Preliminaries {
             //         [ 8,  9, 10, 11],
             //         [12, 13, 14, 15],
             //         [16, 17, 18, 19]])
-            // 我们可以通过行索引（𝑖
-            // ）和列索引（𝑗
-            // ）来访问矩阵中的标量元素𝑎𝑖𝑗
-            // ， 例如[𝐀]𝑖𝑗
-            // 。 如果没有给出矩阵𝐀
+            var A = TTorch.Arange(20).Reshape(5, 4);
+            writer.WriteLine("A: {0}", A.ToString());
+            writer.WriteLine("A.Strides: {0}", TTorch.ToString(A.Strides));
+
+            // 我们可以通过行索引（𝑖 ）和列索引（𝑗 ）来访问矩阵中的标量元素𝑎𝑖𝑗
+            // ， 例如[𝐀]𝑖𝑗 。 如果没有给出矩阵𝐀
             // 的标量元素，如在 :eqref:eq_matrix_def那样， 我们可以简单地使用矩阵𝐀
             // 的小写字母索引下标𝑎𝑖𝑗
             //  来引用[𝐀]𝑖𝑗
@@ -159,6 +176,11 @@ namespace Zyl.SampleD2L.Chapter02Preliminaries {
             //         [ 1,  5,  9, 13, 17],
             //         [ 2,  6, 10, 14, 18],
             //         [ 3,  7, 11, 15, 19]])
+            var B = Tensor.Transpose(A);
+            writer.WriteLine("A.T: {0}", B.ToString());
+            writer.WriteLine("A.T.Strides: {0}", TTorch.ToString(B.Strides));
+            writer.WriteLine("A: {0}", A.ToString());
+
             // 作为方阵的一种特殊类型，[对称矩阵（symmetric matrix）𝐀
             // 等于其转置：𝐀=𝐀⊤
             // ]。 这里定义一个对称矩阵𝐁
@@ -169,22 +191,22 @@ namespace Zyl.SampleD2L.Chapter02Preliminaries {
             // tensor([[1, 2, 3],
             //         [2, 0, 4],
             //         [3, 4, 5]])
+            B = TTorch.FromNDArray<int>(new int[,] { { 1, 2, 3 }, { 2, 0, 4 }, { 3, 4, 5 } });
+
             // 现在我们将B与它的转置进行比较。
             // 
             // B == B.T
             // tensor([[True, True, True],
             //         [True, True, True],
             //         [True, True, True]])
+            writer.WriteLine("B == B.T: {0}", Tensor.Equals(B.AsReadOnlyTensorSpan(), Tensor.Transpose(B)).ToString());
+
             // 矩阵是有用的数据结构：它们允许我们组织具有不同模式的数据。 例如，我们矩阵中的行可能对应于不同的房屋（数据样本），而列可能对应于不同的属性。 曾经使用过电子表格软件或已阅读过 :numref:sec_pandas的人，应该对此很熟悉。 因此，尽管单个向量的默认方向是列向量，但在表示表格数据集的矩阵中， 将每个数据样本作为矩阵中的行向量更为常见。 后面的章节将讲到这点，这种约定将支持常见的深度学习实践。 例如，沿着张量的最外轴，我们可以访问或遍历小批量的数据样本。
             // 
             // 张量
             // [就像向量是标量的推广，矩阵是向量的推广一样，我们可以构建具有更多轴的数据结构]。 张量（本小节中的“张量”指代数对象）是描述具有任意数量轴的𝑛
-            // 维数组的通用方法。 例如，向量是一阶张量，矩阵是二阶张量。 张量用特殊字体的大写字母表示（例如，𝖷
-            // 、𝖸
-            // 和𝖹
-            // ）， 它们的索引机制（例如𝑥𝑖𝑗𝑘
-            // 和[𝖷]1,2𝑖−1,3
-            // ）与矩阵类似。
+            // 维数组的通用方法。 例如，向量是一阶张量，矩阵是二阶张量。 张量用特殊字体的大写字母表示（例如，𝖷 、𝖸 和𝖹
+            // ）， 它们的索引机制（例如𝑥𝑖𝑗𝑘 和[𝖷]1,2𝑖−1,3 ）与矩阵类似。
             // 
             // 当我们开始处理图像时，张量将变得更加重要，图像以𝑛
             // 维数组形式出现， 其中3个轴对应于高度、宽度，以及一个通道（channel）轴， 用于表示颜色通道（红色、绿色和蓝色）。 现在先将高阶张量暂放一边，而是专注学习其基础知识。
@@ -198,6 +220,13 @@ namespace Zyl.SampleD2L.Chapter02Preliminaries {
             //         [[12, 13, 14, 15],
             //          [16, 17, 18, 19],
             //          [20, 21, 22, 23]]])
+            A = TTorch.Arange(24).Reshape(2, 3, 4);
+            writer.WriteLine("A: {0}", A.ToString());
+            writer.WriteLine("A.Strides: {0}", TTorch.ToString(A.Strides));
+
+        }
+
+        public static void Part2(TextWriter writer) {
             // 张量算法的基本性质
             // 标量、向量、矩阵和任意数量轴的张量（本小节中的“张量”指代数对象）有一些实用的属性。 例如，从按元素操作的定义中可以注意到，任何按元素的一元运算都不会改变其操作数的形状。 同样，[给定具有相同形状的任意两个张量，任何按元素二元运算的结果都将是相同形状的张量]。 例如，将两个相同形状的矩阵相加，会在这两个矩阵上执行元素加法。
             // 
@@ -214,13 +243,14 @@ namespace Zyl.SampleD2L.Chapter02Preliminaries {
             //          [16., 18., 20., 22.],
             //          [24., 26., 28., 30.],
             //          [32., 34., 36., 38.]]))
+            var A = TTorch.Arange(20.0f).Reshape(5, 4);
+            var B = A.Clone();
+            writer.WriteLine("A: {0}", A.ToString());
+            writer.WriteLine("A + B: {0}", Tensor.Add(A.AsReadOnlyTensorSpan(), B).ToString());
+
             // 具体而言，[两个矩阵的按元素乘法称为Hadamard积（Hadamard product）（数学符号⊙
-            // ）]。 对于矩阵𝐁∈ℝ𝑚×𝑛
-            // ， 其中第𝑖
-            // 行和第𝑗
-            // 列的元素是𝑏𝑖𝑗
-            // 。 矩阵𝐀
-            // （在 :eqref:eq_matrix_def中定义）和𝐁
+            // ）]。 对于矩阵𝐁∈ℝ𝑚×𝑛 ， 其中第𝑖行和第𝑗列的元素是𝑏𝑖𝑗
+            // 。 矩阵𝐀 （在 :eqref:eq_matrix_def中定义）和𝐁
             // 的Hadamard积为：
             // 𝐀⊙𝐁=𝑎11𝑏11𝑎21𝑏21⋮𝑎𝑚1𝑏𝑚1𝑎12𝑏12𝑎22𝑏22⋮𝑎𝑚2𝑏𝑚2……⋱…𝑎1𝑛𝑏1𝑛𝑎2𝑛𝑏2𝑛⋮𝑎𝑚𝑛𝑏𝑚𝑛.
             // 

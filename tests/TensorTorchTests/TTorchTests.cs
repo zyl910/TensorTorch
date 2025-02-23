@@ -25,6 +25,22 @@ namespace Zyl.TensorTorch.Tests {
         [TestCase((uint)8)]
         [TestCase((long)9)]
         [TestCase((ulong)10)]
+        public void CloneTest<T>(T src) where T : INumberBase<T> {
+            var A = TTorch.Arange(src);
+            var B = A.Clone();
+            Assert.AreEqual(A, B);
+        }
+
+        [TestCase((float)1)]
+        [TestCase((double)2)]
+        [TestCase((sbyte)3)]
+        [TestCase((byte)4)]
+        [TestCase((short)5)]
+        [TestCase((ushort)6)]
+        [TestCase((int)7)]
+        [TestCase((uint)8)]
+        [TestCase((long)9)]
+        [TestCase((ulong)10)]
         public void ArangeTest<T>(T src) where T : INumberBase<T> {
             int len = int.CreateTruncating(src);
             Writer.WriteLine("len: {0}", len);
