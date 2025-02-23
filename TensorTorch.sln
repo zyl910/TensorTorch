@@ -11,6 +11,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TensorTorch", "src\TensorTo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleD2L", "samples\SampleD2L\SampleD2L.csproj", "{8C3C9F2C-0633-4AFD-A78C-D63083ACBEB1}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{1BA89E9C-BE8A-4213-8156-F8780F6F1566}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TensorTorchTests", "tests\TensorTorchTests\TensorTorchTests.csproj", "{B9CC727F-77D3-4AEA-857C-330055F688DB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,6 +29,10 @@ Global
 		{8C3C9F2C-0633-4AFD-A78C-D63083ACBEB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8C3C9F2C-0633-4AFD-A78C-D63083ACBEB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8C3C9F2C-0633-4AFD-A78C-D63083ACBEB1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B9CC727F-77D3-4AEA-857C-330055F688DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9CC727F-77D3-4AEA-857C-330055F688DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9CC727F-77D3-4AEA-857C-330055F688DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9CC727F-77D3-4AEA-857C-330055F688DB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -32,5 +40,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{1156F656-DD23-463D-8656-B6B99AFF9A22} = {2885DFF9-64EC-425E-B318-7B9C3ECC40F1}
 		{8C3C9F2C-0633-4AFD-A78C-D63083ACBEB1} = {F363B75A-B775-49AA-8358-5226E0A26DD0}
+		{B9CC727F-77D3-4AEA-857C-330055F688DB} = {1BA89E9C-BE8A-4213-8156-F8780F6F1566}
 	EndGlobalSection
 EndGlobal
