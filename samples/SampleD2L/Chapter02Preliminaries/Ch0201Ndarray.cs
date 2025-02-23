@@ -12,7 +12,7 @@ namespace Zyl.SampleD2L.Chapter02Preliminaries {
 #pragma warning disable SYSLIB5001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
 
         public static void Output(TextWriter writer) {
-            writer.WriteLine("### 2.1 ndarray");
+            writer.WriteLine("### 2.1 Ndarray");
 
             // # 数据操作
             // :label:`sec_ndarray`
