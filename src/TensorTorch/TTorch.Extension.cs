@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Buffers;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Numerics.Tensors;
 using System.Text;
@@ -388,10 +389,13 @@ namespace Zyl.TensorTorch {
             if (source.IsEmpty) {
                 return Array.Empty<T>();
             }
+            nint flattenedLength = source.FlattenedLength;
+            //if (flattenedLength > Array.MaxLength) {
+            //    throw new ArgumentOutOfRangeException(string.Format("Flattened length ({0}) is out of array max length!", flattenedLength));
+            //}
             ReadOnlySpan<nint> lengths = source.Lengths;
-            T[] rt = (T[])Array.CreateInstance(typeof(T), (long)source.FlattenedLength);
-            //TensorSpan<T> tensorSpan = new TensorSpan<T>(rt, ReadOnlySpan<int>.Empty, lengths, []);
-            TensorSpan<T> tensorSpan = new TensorSpan<T>(rt, ReadOnlySpan<int>.Empty, lengths, ReadOnlySpan<nint>.Empty);
+            T[] rt = new T[flattenedLength];
+            TensorSpan<T> tensorSpan = new TensorSpan<T>(rt, ReadOnlySpan<int>.Empty, lengths, []);
             source.CopyTo(tensorSpan);
             return rt;
         }
@@ -409,7 +413,16 @@ namespace Zyl.TensorTorch {
         /// <returns>Returns new array (返回新数组).</returns>
         /// <seealso cref="ToNDArray{T}(in ReadOnlyTensorSpan{T})"/>
         public static T[,] To2DArray<T>(this in ReadOnlyTensorSpan<T> source) {
-            return (T[,])ToNDArray(source);
+            if (2 != source.Rank) {
+                throw new ArgumentException(string.Format("The rank({0}) of a tensor must be equal to 2!", source.Rank));
+            }
+            ReadOnlySpan<nint> lengths = source.Lengths;
+            //long[] lengthsLong = new long[lengths.Length];
+            //TensorPrimitives.ConvertChecked(lengths, lengthsLong.AsSpan());
+            var rt = new T[lengths[0], lengths[1]];
+            TensorSpan<T> tensorSpan = new TensorSpan<T>(rt);
+            source.CopyTo(tensorSpan);
+            return rt;
         }
 
         /// <inheritdoc cref="To3DArray{T}(in ReadOnlyTensorSpan{T})"/>
@@ -425,7 +438,16 @@ namespace Zyl.TensorTorch {
         /// <returns>Returns new array (返回新数组).</returns>
         /// <seealso cref="ToNDArray{T}(in ReadOnlyTensorSpan{T})"/>
         public static T[,,] To3DArray<T>(this in ReadOnlyTensorSpan<T> source) {
-            return (T[,,])ToNDArray(source);
+            if (3 != source.Rank) {
+                throw new ArgumentException(string.Format("The rank({0}) of a tensor must be equal to 3!", source.Rank));
+            }
+            ReadOnlySpan<nint> lengths = source.Lengths;
+            //long[] lengthsLong = new long[lengths.Length];
+            //TensorPrimitives.ConvertChecked(lengths, lengthsLong.AsSpan());
+            var rt = new T[lengths[0], lengths[1], lengths[2]];
+            TensorSpan<T> tensorSpan = new TensorSpan<T>(rt);
+            source.CopyTo(tensorSpan);
+            return rt;
         }
 
         /// <inheritdoc cref="To4DArray{T}(in ReadOnlyTensorSpan{T})"/>
@@ -441,10 +463,20 @@ namespace Zyl.TensorTorch {
         /// <returns>Returns new array (返回新数组).</returns>
         /// <seealso cref="ToNDArray{T}(in ReadOnlyTensorSpan{T})"/>
         public static T[,,,] To4DArray<T>(this in ReadOnlyTensorSpan<T> source) {
-            return (T[,,,])ToNDArray(source);
+            if (4 != source.Rank) {
+                throw new ArgumentException(string.Format("The rank({0}) of a tensor must be equal to 4!", source.Rank));
+            }
+            ReadOnlySpan<nint> lengths = source.Lengths;
+            //long[] lengthsLong = new long[lengths.Length];
+            //TensorPrimitives.ConvertChecked(lengths, lengthsLong.AsSpan());
+            var rt = new T[lengths[0], lengths[1], lengths[2], lengths[3]];
+            TensorSpan<T> tensorSpan = new TensorSpan<T>(rt);
+            source.CopyTo(tensorSpan);
+            return rt;
         }
 
         /// <inheritdoc cref="ToNDArray{T}(in ReadOnlyTensorSpan{T})"/>
+        [RequiresDynamicCode("Array.CreateInstance: The code for an array of the specified type might not be available.")]
         public static Array ToNDArray<T>(this Tensor<T> source) {
             return ToNDArray(source.AsReadOnlyTensorSpan());
         }
@@ -459,10 +491,8 @@ namespace Zyl.TensorTorch {
         /// <seealso cref="To2DArray{T}(in ReadOnlyTensorSpan{T})"/>
         /// <seealso cref="To3DArray{T}(in ReadOnlyTensorSpan{T})"/>
         /// <seealso cref="To4DArray{T}(in ReadOnlyTensorSpan{T})"/>
+        [RequiresDynamicCode("Array.CreateInstance: The code for an array of the specified type might not be available.")]
         public static Array ToNDArray<T>(this in ReadOnlyTensorSpan<T> source) {
-            if (source.IsEmpty) {
-                return Array.Empty<T>();
-            }
             ReadOnlySpan<nint> lengths = source.Lengths;
             long[] lengthsLong = new long[lengths.Length];
             TensorPrimitives.ConvertChecked(lengths, lengthsLong.AsSpan());
