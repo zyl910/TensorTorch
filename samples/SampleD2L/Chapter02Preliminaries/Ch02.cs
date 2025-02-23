@@ -9,6 +9,7 @@ namespace Zyl.SampleD2L.Chapter02Preliminaries {
         public static void Output(TextWriter writer) {
             writer.WriteLine("## Chapter2 Preliminaries");
             Ch0201Ndarray.Output(writer);
+            Ch0202Pandas.Output(writer);
             // done.
             writer.WriteLine();
         }

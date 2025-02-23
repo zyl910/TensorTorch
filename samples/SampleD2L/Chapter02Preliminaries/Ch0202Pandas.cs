@@ -29,6 +29,24 @@ namespace Zyl.SampleD2L.Chapter02Preliminaries {
             //     f.write('2,NA,106000\n')
             //     f.write('4,NA,178100\n')
             //     f.write('NA,NA,140000\n')
+            try {
+                DirectoryInfo di = new DirectoryInfo("data");
+                if (!di.Exists) {
+                    di.Create();
+                }
+                string data_file_Path = Path.Combine(di.FullName, "house_tiny.csv");
+                writer.WriteLine("data_file_Path: {0}", data_file_Path);
+                using (StreamWriter f = new StreamWriter(data_file_Path)) {
+                    f.WriteLine("NumRooms,Alley,Price");
+                    f.WriteLine("NA,Pave,127500");
+                    f.WriteLine("2,NA,106000");
+                    f.WriteLine("4,NA,178100");
+                    f.WriteLine("NA,NA,140000");
+                }
+            } catch (Exception ex) {
+                writer.WriteLine(ex);
+            }
+
             // 要[从创建的CSV文件中加载原始数据集]，我们导入pandas包并调用read_csv函数。该数据集有四行三列。其中每行描述了房间数量（“NumRooms”）、巷子类型（“Alley”）和房屋价格（“Price”）。
             // 
             // # 如果没有安装pandas，只需取消对以下行的注释来安装pandas
@@ -42,6 +60,8 @@ namespace Zyl.SampleD2L.Chapter02Preliminaries {
             // 1       2.0   NaN  106000
             // 2       4.0   NaN  178100
             // 3       NaN   NaN  140000
+            // TODO: Need pandas
+
             // 处理缺失值
             // 注意，“NaN”项代表缺失值。 [为了处理缺失的数据，典型的方法包括插值法和删除法，] 其中插值法用一个替代值弥补缺失值，而删除法则直接忽略缺失值。 在(这里，我们将考虑插值法)。
             // 
