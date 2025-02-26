@@ -3,6 +3,7 @@ using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Numerics;
 using System.Numerics.Tensors;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -186,7 +187,6 @@ namespace Zyl.TensorTorch {
         /// Forms a slice out of the given tensor. The parameters are similar to PyTorch (从给定的张量中形成一个切片. 参数与 PyTorch 相似).
         /// </summary>
         /// <typeparam name="T">The element type (元素类型).</typeparam>
-        /// <typeparam name="TSelf">The result type (返回值类型).</typeparam>
         /// <param name="source">The source (源).</param>
         /// <param name="start">The start indexes for the slice (切片的开始索引).</param>
         /// <returns><see cref="Tensor{T}"/> as a slice of the provided ranges (所提供范围的切片).</returns>
@@ -214,7 +214,6 @@ namespace Zyl.TensorTorch {
         /// Forms a slice out of the given tensor. The parameters are similar to PyTorch (从给定的张量中形成一个切片. 参数与 PyTorch 相似).
         /// </summary>
         /// <typeparam name="T">The element type (元素类型).</typeparam>
-        /// <typeparam name="TSelf">The result type (返回值类型).</typeparam>
         /// <param name="source">The source (源).</param>
         /// <param name="startIndex">The start indexes for the slice (切片的开始索引).</param>
         /// <returns><see cref="Tensor{T}"/> as a slice of the provided ranges (所提供范围的切片).</returns>
@@ -270,7 +269,6 @@ namespace Zyl.TensorTorch {
         /// Forms a slice out of the given tensor. The parameters are similar to PyTorch (从给定的张量中形成一个切片. 参数与 PyTorch 相似).
         /// </summary>
         /// <typeparam name="T">The element type (元素类型).</typeparam>
-        /// <typeparam name="TSelf">The result type (返回值类型).</typeparam>
         /// <param name="source">The source (源).</param>
         /// <param name="start">The start indexes for the slice (切片的开始索引).</param>
         /// <returns><see cref="Tensor{T}"/> as a slice of the provided ranges (所提供范围的切片).</returns>
@@ -299,7 +297,6 @@ namespace Zyl.TensorTorch {
         /// Forms a slice out of the given tensor. The parameters are similar to PyTorch (从给定的张量中形成一个切片. 参数与 PyTorch 相似).
         /// </summary>
         /// <typeparam name="T">The element type (元素类型).</typeparam>
-        /// <typeparam name="TSelf">The result type (返回值类型).</typeparam>
         /// <param name="source">The source (源).</param>
         /// <param name="startIndex">The start indexes for the slice (切片的开始索引).</param>
         /// <returns><see cref="Tensor{T}"/> as a slice of the provided ranges (所提供范围的切片).</returns>
@@ -355,7 +352,6 @@ namespace Zyl.TensorTorch {
         /// Forms a slice out of the given tensor. The parameters are similar to PyTorch (从给定的张量中形成一个切片. 参数与 PyTorch 相似).
         /// </summary>
         /// <typeparam name="T">The element type (元素类型).</typeparam>
-        /// <typeparam name="TSelf">The result type (返回值类型).</typeparam>
         /// <param name="source">The source (源).</param>
         /// <param name="start">The start indexes for the slice (切片的开始索引).</param>
         /// <returns><see cref="Tensor{T}"/> as a slice of the provided ranges (所提供范围的切片).</returns>
@@ -384,7 +380,6 @@ namespace Zyl.TensorTorch {
         /// Forms a slice out of the given tensor. The parameters are similar to PyTorch (从给定的张量中形成一个切片. 参数与 PyTorch 相似).
         /// </summary>
         /// <typeparam name="T">The element type (元素类型).</typeparam>
-        /// <typeparam name="TSelf">The result type (返回值类型).</typeparam>
         /// <param name="source">The source (源).</param>
         /// <param name="startIndex">The start indexes for the slice (切片的开始索引).</param>
         /// <returns><see cref="Tensor{T}"/> as a slice of the provided ranges (所提供范围的切片).</returns>
@@ -407,6 +402,177 @@ namespace Zyl.TensorTorch {
             }
             return source.Slice(start2);
         }
+
+        // -- torch.sum(input, *, dim=None, keepdim=False, out=None)
+
+        /// <summary>
+        /// This function is used to compute the sum of all elements in the input tensor. Support dim parameter (此函数用于对输入张量中所有元素计算求和. 支持 dim 参数. 支持 dim 参数). Like `torch.sum`.
+        /// </summary>
+        /// <typeparam name="T">The element type (元素类型).</typeparam>
+        /// <param name="source">The source tensor (源张量).</param>
+        /// <param name="dim">Specifies the dimension(s) along which the sum is computed. If not specified, the sum is computed over all elements (指定计算求和所依据的维度. 如果未指定, 则计算所有元素的总和).</param>
+        /// <param name="keepdim">Whether the output tensor has dimension retained or not (输出张量是否保留维度).</param>
+        /// <param name="pinned">A Boolean whether the underlying data should be pinned or not (一个布尔值，表示是否应固定基础数据).</param>
+        /// <returns>Return a new tensor that stores the sum results (返回新张量, 存放了求和结果).</returns>
+        public static Tensor<T> SumTorch<T>(this Tensor<T> source, Span<int> dim, bool keepdim = false, bool pinned = false) where T : IAdditionOperators<T, T, T>, IAdditiveIdentity<T, T> {
+            return SumTorch(source.AsReadOnlyTensorSpan(), dim, keepdim, pinned);
+        }
+
+        /// <summary>
+        /// This function is used to compute the sum of all elements in the input tensor. Support dim parameter (此函数用于对输入张量中所有元素计算求和. 支持 dim 参数. 支持 dim 参数). Like `torch.sum`.
+        /// </summary>
+        /// <typeparam name="T">The element type (元素类型).</typeparam>
+        /// <param name="source">The source tensor (源张量).</param>
+        /// <param name="dim">Specifies the dimension(s) along which the sum is computed. If not specified, the sum is computed over all elements (指定计算求和所依据的维度. 如果未指定, 则计算所有元素的总和).</param>
+        /// <param name="keepdim">Whether the output tensor has dimension retained or not (输出张量是否保留维度).</param>
+        /// <param name="pinned">A Boolean whether the underlying data should be pinned or not (一个布尔值，表示是否应固定基础数据).</param>
+        /// <returns>Return a new tensor that stores the sum results (返回新张量, 存放了求和结果).</returns>
+        public static Tensor<T> SumTorch<T>(this in ReadOnlyTensorSpan<T> source, Span<int> dim, bool keepdim = false, bool pinned = false) where T : IAdditionOperators<T, T, T>, IAdditiveIdentity<T, T> {
+            if (source.IsEmpty) {
+                return Tensor<T>.Empty;
+            }
+
+            // If not specified, the sum is computed over all elements.
+            int rank = source.Rank;
+            Span<nint> lengthsDst = stackalloc nint[rank];
+            if (dim.IsEmpty) {
+                T sumData = Tensor.Sum(source);
+                if (!keepdim) {
+                    lengthsDst = lengthsDst.Slice(0, 1);
+                }
+                lengthsDst.Fill(1);
+                Tensor<T> rt = Tensor.CreateUninitialized<T>(lengthsDst);
+                rt.Fill(sumData);
+                return rt;
+            }
+
+            // lengthsDst
+            ReadOnlySpan<nint> lengths = source.Lengths;
+            Span<nint> lengthsDstKeep = stackalloc nint[rank];
+            nint numel;
+            int sumableDim;
+            lengthsDst = SumTorch_MakeLengthsDst(lengths, dim, keepdim, lengthsDstKeep, lengthsDst, out numel, out sumableDim);
+
+            // Fill values.
+            Tensor<T> dst = Tensor.Create<T>(lengthsDst, pinned);
+            if (numel <= 1) {
+                T sumData = Tensor.Sum(source);
+                dst.Fill(sumData);
+            } else {
+                TensorSpan<T> dstSpan = dst.AsTensorSpan().Reshape(lengthsDstKeep);
+                Span<nint> indicesSrc = stackalloc nint[rank];
+                Span<nint> indicesDst = stackalloc nint[rank];
+                Span<NRange> rangesSrc = stackalloc NRange[rank];
+                indicesSrc.Clear();
+                indicesDst.Clear();
+                rangesSrc.Fill(NRange.All);
+                SumTorch_Core(source, dim, keepdim, dstSpan, sumableDim, 0, indicesSrc, indicesDst, rangesSrc);
+            }
+            return dst;
+        }
+
+        /// <summary>
+        /// SumTorch - Make lengthsDst.
+        /// </summary>
+        /// <param name="lengths">The source lengths (源长度).</param>
+        /// <param name="dim">Specifies the dimension(s) along which the sum is computed. If not specified, the sum is computed over all elements (指定计算求和所依据的维度. 如果未指定, 则计算所有元素的总和).</param>
+        /// <param name="keepdim">Whether the output tensor has dimension retained or not (输出张量是否保留维度).</param>
+        /// <param name="lengthsDstKeep">The destination lengths buffer with keepdim (使用keepdim时的目标长度缓冲区).</param>
+        /// <param name="lengthsDst">The destination lengths buffer (目标长度缓冲区).</param>
+        /// <param name="numel">Return the elements total number of destination (返回目标的元素总数).</param>
+        /// <param name="sumableDim">Return the dimensions that can be summed up (返回可求和的维度).</param>
+        /// <returns>Returns the destination lengths (返回目标长度).</returns>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        private static Span<nint> SumTorch_MakeLengthsDst(in ReadOnlySpan<nint> lengths, Span<int> dim, bool keepdim, Span<nint> lengthsDstKeep, Span<nint> lengthsDst, out nint numel, out int sumableDim) {
+            int rank = lengths.Length;
+            lengths.CopyTo(lengthsDstKeep);
+            for (int i = 0; i < dim.Length; i++) {
+                int k = dim[i];
+                if (k < 0 || k >= rank) {
+                    throw new ArgumentOutOfRangeException(nameof(dim), string.Format("The dim[{0}] ({1}) out of range ([0, {2}))!", i, k, rank));
+                }
+                lengthsDstKeep[k] = 1;
+            }
+
+            // lengthsDst
+            numel = 1;
+            int rankDst = 0;
+            for (int i = 0; i < lengths.Length; ++i) {
+                bool isfound = dim.Contains(i);
+                if (isfound) {
+                    // continue
+                } else {
+                    lengthsDst[rankDst] = lengths[i];
+                    rankDst++;
+                    numel *= lengths[i];
+                }
+            }
+            if (keepdim) {
+                lengthsDstKeep.CopyTo(lengthsDst);
+            } else {
+                if (rankDst <= 0) {
+                    lengthsDst[0] = 1; // Sum all dims.
+                    rankDst = 1;
+                }
+                lengthsDst = lengthsDst.Slice(0, rankDst);
+            }
+            // sumableDim
+            sumableDim = rank;
+            for (int i = rank - 1; i >= 0; --i) {
+                bool isfound = dim.Contains(i);
+                if (isfound) {
+                    sumableDim = i;
+                } else {
+                    break;
+                }
+            }
+            return lengthsDst;
+        }
+
+        /// <summary>
+        /// SumTorch - Core.
+        /// </summary>
+        /// <typeparam name="T">The element type (元素类型).</typeparam>
+        /// <param name="source">The source tensor (源张量).</param>
+        /// <param name="dim">Specifies the dimension(s) along which the sum is computed. If not specified, the sum is computed over all elements (指定计算求和所依据的维度. 如果未指定, 则计算所有元素的总和).</param>
+        /// <param name="keepdim">Whether the output tensor has dimension retained or not (输出张量是否保留维度).</param>
+        /// <param name="destination">The destination tensor (目标张量).</param>
+        /// <param name="sumableDim">The dimensions that can be summed up (可求和的维度).</param>
+        /// <param name="level">Current level (当前层级).</param>
+        /// <param name="indicesSrc">Indices of source tensor (源张量的索引).</param>
+        /// <param name="indicesDst">Indices of destination tensor (目标张量的索引).</param>
+        /// <param name="rangesSrc">Sum ranges of source tensor (源张量的求和范围).</param>
+        private static void SumTorch_Core<T>(in ReadOnlyTensorSpan<T> source, Span<int> dim, bool keepdim, in TensorSpan<T> destination, int sumableDim, int level, Span<nint> indicesSrc, Span<nint> indicesDst, Span<NRange> rangesSrc) where T : IAdditionOperators<T, T, T>, IAdditiveIdentity<T, T> {
+            int dimMax = source.Lengths.Length - 1;
+            int levelNext = level + 1;
+            nint countSrc = source.Lengths[level];
+            nint countDst = destination.Lengths[level];
+            indicesDst[level] = 0;
+            if (level >= sumableDim) {
+                // Batch sum.
+                ReadOnlyTensorSpan<T> tensorSpan = source.Slice(rangesSrc);
+                T sumData = Tensor.Sum(tensorSpan);
+                destination[indicesDst] += sumData;
+            } else {
+                // Base sum.
+                for (nint i = 0; i < countSrc; ++i) {
+                    indicesSrc[level] = i;
+                    if (countDst == countSrc) {
+                        indicesDst[level] = i;
+                    }
+                    if (level < dimMax) {
+                        rangesSrc[level] = new NRange(i, i + 1);
+                        SumTorch_Core(source, dim, keepdim, destination, sumableDim, levelNext, indicesSrc, indicesDst, rangesSrc);
+                    } else {
+                        destination[indicesDst] += source[indicesSrc];
+                    }
+                }
+            }
+        }
+
+        //public static void SumTorch<T>(this in ReadOnlyTensorSpan<T> source, Span<int> dim, bool keepdim, in TensorSpan<T> destination) where T : IAdditionOperators<T, T, T>, IAdditiveIdentity<T, T> {
+        //}
+
 
         /// <inheritdoc cref="To1DArray{T}(in ReadOnlyTensorSpan{T})"/>
         public static T[] To1DArray<T>(this Tensor<T> source) {

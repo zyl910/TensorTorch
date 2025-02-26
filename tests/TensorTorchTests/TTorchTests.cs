@@ -62,6 +62,69 @@ namespace Zyl.TensorTorch.Tests {
             Assert.AreEqual(expected, dst);
         }
 
+        [TestCase((float)1)]
+        [TestCase((double)2)]
+        [TestCase((sbyte)3)]
+        [TestCase((byte)4)]
+        [TestCase((short)5)]
+        [TestCase((ushort)6)]
+        [TestCase((int)7)]
+        [TestCase((uint)8)]
+        [TestCase((long)9)]
+        [TestCase((ulong)10)]
+        public void SumTorchTest<T>(T src) where T : INumberBase<T> {
+            const int rank = 2;
+            const int rank1 = 1;
+            const int rankAll = 1;
+            const nint one = 1;
+            const nint m = 5, n = 4;
+            const nint numel = m * n;
+            T numelT = T.CreateChecked(numel);
+            Tensor<T> A = TTorch.Arange(numelT).Reshape(5, 4);
+            T sumData = Tensor.Sum(A.AsReadOnlyTensorSpan());
+            Tensor<T> D;
+
+            D = A.SumTorch([]);
+            Assert.AreEqual(rankAll, D.Rank);
+            Assert.AreEqual(one, D.FlattenedLength);
+            Assert.AreEqual(sumData, D[0]);
+
+            D = A.SumTorch([], true);
+            Assert.AreEqual(rank, D.Rank);
+            Assert.AreEqual(one, D.FlattenedLength);
+            Assert.AreEqual(sumData, Tensor.Sum(D.AsReadOnlyTensorSpan()));
+
+            D = A.SumTorch([0]);
+            Assert.AreEqual(rank1, D.Rank);
+            Assert.AreEqual(n, D.FlattenedLength);
+            Assert.AreEqual(sumData, Tensor.Sum(D.AsReadOnlyTensorSpan()));
+
+            D = A.SumTorch([0], true);
+            Assert.AreEqual(rank, D.Rank);
+            Assert.AreEqual(n, D.FlattenedLength);
+            Assert.AreEqual(sumData, Tensor.Sum(D.AsReadOnlyTensorSpan()));
+
+            D = A.SumTorch([1]);
+            Assert.AreEqual(rank1, D.Rank);
+            Assert.AreEqual(m, D.FlattenedLength);
+            Assert.AreEqual(sumData, Tensor.Sum(D.AsReadOnlyTensorSpan()));
+
+            D = A.SumTorch([1], true);
+            Assert.AreEqual(rank, D.Rank);
+            Assert.AreEqual(m, D.FlattenedLength);
+            Assert.AreEqual(sumData, Tensor.Sum(D.AsReadOnlyTensorSpan()));
+
+            D = A.SumTorch([0, 1]);
+            Assert.AreEqual(rankAll, D.Rank);
+            Assert.AreEqual(one, D.FlattenedLength);
+            Assert.AreEqual(sumData, Tensor.Sum(D.AsReadOnlyTensorSpan()));
+
+            D = A.SumTorch([0, 1], true);
+            Assert.AreEqual(rank, D.Rank);
+            Assert.AreEqual(one, D.FlattenedLength);
+            Assert.AreEqual(sumData, Tensor.Sum(D.AsReadOnlyTensorSpan()));
+        }
+
 #pragma warning restore SYSLIB5001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
     }
 }

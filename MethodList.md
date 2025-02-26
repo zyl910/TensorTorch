@@ -8,6 +8,7 @@ Methods:
 - CreateAndFill: Create and fill with the given value (创建并使用指定值填充).
 - FromNDArray: Create tensor by N-dimensional array (根据N维数组创建张量). Like `torch.tensor`.
 - Ones: This method creates a tensor of a specified shape, where each element is initialized to the scalar value 1 (此方法用于创建指定形状的张量，其中每个元素都初始化为标量值1). Like `torch.ones`.
+- SumTorch: This function is used to compute the sum of all elements in the input tensor. Support dim parameter (此函数用于对输入张量中所有元素计算求和. 支持 dim 参数). Like `torch.sum`.
 - ToString: ReadOnlySpan to String.
 - Zeros: This method returns a tensor filled with zeros that has a specified shape (此方法返回一个填充有具有指定形状的零的张量). Like `torch.zeros`.
 - ZerosLike: Returns a tensor filled with the scalar value 0, with the same size as input (返回一个填充了标量值0的张量，其大小与 input 相同). Like `torch.zeros_like`.
@@ -53,6 +54,7 @@ Member of  tensor object (张量对象的成员).
 | x.reshape    | x.Reshape                | Reshape (变形).                            |
 | x.shape      | x.Lengths                | Lengths (各维的长度).                         |
 | x.stride     | X.Strides                | Strides (各维的跨距).                         |
+| x.sum        | x.SumTorch               | Sum by dimensions (根据维度的求和)              |
 | x.T          | Tensor.Transpose         | Transpose (矩阵转置).                        |
 
 Operator (运算符).

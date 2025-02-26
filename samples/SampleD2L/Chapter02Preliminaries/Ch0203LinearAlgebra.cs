@@ -260,6 +260,8 @@ namespace Zyl.SampleD2L.Chapter02Preliminaries {
             //         [ 64.,  81., 100., 121.],
             //         [144., 169., 196., 225.],
             //         [256., 289., 324., 361.]])
+            writer.WriteLine("A * B: {0}", Tensor.Multiply(A.AsReadOnlyTensorSpan(), B).ToString());
+
             // 将张量乘以或加上一个标量不会改变张量的形状，其中张量的每个元素都将与标量相加或相乘。
             // 
             // a = 2
@@ -273,6 +275,10 @@ namespace Zyl.SampleD2L.Chapter02Preliminaries {
             //           [18, 19, 20, 21],
             //           [22, 23, 24, 25]]]),
             //  torch.Size([2, 3, 4]))
+            var a = 2;
+            var X = TTorch.Arange(24).Reshape(2, 3, 4);
+            writer.WriteLine("a + X: {0}", Tensor.Add(X.AsReadOnlyTensorSpan(), a).ToString());
+
             // 降维
             // :label:subseq_lin-alg-reduction
             // 
@@ -284,26 +290,48 @@ namespace Zyl.SampleD2L.Chapter02Preliminaries {
             // x = torch.arange(4, dtype=torch.float32)
             // x, x.sum()
             // (tensor([0., 1., 2., 3.]), tensor(6.))
+            var x = TTorch.Arange<float>(4.0f);
+            writer.WriteLine("x: {0}", x.ToString());
+            writer.WriteLine("x.sum: {0}", Tensor.Sum(x.AsReadOnlyTensorSpan()));
+
             // 我们可以(表示任意形状张量的元素和)。 例如，矩阵𝐀
             // 中元素的和可以记为∑𝑚𝑖=1∑𝑛𝑗=1𝑎𝑖𝑗
             // 。
             // 
             // A.shape, A.sum()
             // (torch.Size([5, 4]), tensor(190.))
+            writer.WriteLine("A: {0}", A.ToString());
+            writer.WriteLine("A.shape: {0}", TTorch.ToString(A.Lengths));
+            //writer.WriteLine("A.sum: {0}", A.Sum()); // It is LINQ, not Tensor.
+            writer.WriteLine("A.sum: {0}", Tensor.Sum(A.AsReadOnlyTensorSpan()));
+            writer.WriteLine("A.SumTorch: {0}", A.SumTorch([]).ToString());
+            writer.WriteLine("A.SumTorch([], keepdim): {0}", A.SumTorch([], true).ToString());
+
             // 默认情况下，调用求和函数会沿所有的轴降低张量的维度，使它变为一个标量。 我们还可以[指定张量沿哪一个轴来通过求和降低维度]。 以矩阵为例，为了通过求和所有行的元素来降维（轴0），可以在调用函数时指定axis=0。 由于输入矩阵沿0轴降维以生成输出向量，因此输入轴0的维数在输出形状中消失。
             // 
             // A_sum_axis0 = A.sum(axis=0)
             // A_sum_axis0, A_sum_axis0.shape
             // (tensor([40., 45., 50., 55.]), torch.Size([4]))
+            var A_sum_axis0 = A.SumTorch([0]);
+            writer.WriteLine("A_sum_axis0: {0}", A_sum_axis0.ToString());
+            writer.WriteLine("A.sum(axis=[0], keepdim): {0}", A.SumTorch([0], true).ToString());
+
             // 指定axis=1将通过汇总所有列的元素降维（轴1）。因此，输入轴1的维数在输出形状中消失。
             // 
             // A_sum_axis1 = A.sum(axis=1)
             // A_sum_axis1, A_sum_axis1.shape
             // (tensor([ 6., 22., 38., 54., 70.]), torch.Size([5]))
+            var A_sum_axis1 = A.SumTorch([1]);
+            writer.WriteLine("A_sum_axis1: {0}", A_sum_axis1.ToString());
+            writer.WriteLine("A.sum(axis=[1], keepdim): {0}", A.SumTorch([1], true).ToString());
+
             // 沿着行和列对矩阵求和，等价于对矩阵的所有元素进行求和。
             // 
             // A.sum(axis=[0, 1])  # 结果和A.sum()相同
             // tensor(190.)
+            writer.WriteLine("A.sum(axis=[0, 1]): {0}", A.SumTorch([0, 1]).ToString());
+            writer.WriteLine("A.sum(axis=[0, 1], keepdim): {0}", A.SumTorch([0, 1], true).ToString());
+
             // [一个与求和相关的量是平均值（mean或average）]。 我们通过将总和除以元素总数来计算平均值。 在代码中，我们可以调用函数来计算任意形状张量的平均值。
             // 
             // A.mean(), A.sum() / A.numel()
@@ -312,6 +340,7 @@ namespace Zyl.SampleD2L.Chapter02Preliminaries {
             // 
             // A.mean(axis=0), A.sum(axis=0) / A.shape[0]
             // (tensor([ 8.,  9., 10., 11.]), tensor([ 8.,  9., 10., 11.]))
+
             // 非降维求和
             // :label:subseq_lin-alg-non-reduction
             // 
@@ -324,6 +353,9 @@ namespace Zyl.SampleD2L.Chapter02Preliminaries {
             //         [38.],
             //         [54.],
             //         [70.]])
+            var sum_A = A.SumTorch([1], true);
+            writer.WriteLine("sum_A: {0}", sum_A.ToString());
+
             // 例如，由于sum_A在对每行进行求和后仍保持两个轴，我们可以(通过广播将A除以sum_A)。
             // 
             // A / sum_A
@@ -332,6 +364,8 @@ namespace Zyl.SampleD2L.Chapter02Preliminaries {
             //         [0.2105, 0.2368, 0.2632, 0.2895],
             //         [0.2222, 0.2407, 0.2593, 0.2778],
             //         [0.2286, 0.2429, 0.2571, 0.2714]])
+            writer.WriteLine("A / sum_A: {0}", Tensor.Divide(A.AsReadOnlyTensorSpan(), sum_A).ToString());
+
             // 如果我们想沿[某个轴计算A元素的累积总和]， 比如axis=0（按行计算），可以调用cumsum函数。 此函数不会沿任何轴降低输入张量的维度。
             // 
             // A.cumsum(axis=0)
