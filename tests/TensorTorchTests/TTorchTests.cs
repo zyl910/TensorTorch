@@ -10,28 +10,10 @@ using Zyl.TensorTorch;
 
 namespace Zyl.TensorTorch.Tests {
     [TestFixture()]
-    public class TTorchTests {
+    public partial class TTorchTests {
 #pragma warning disable SYSLIB5001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
 
         private static TextWriter Writer { get; } = Console.Out;
-
-        [TestCase((float)1)]
-        [TestCase((double)2)]
-        [TestCase((sbyte)3)]
-        [TestCase((byte)4)]
-        [TestCase((short)5)]
-        [TestCase((ushort)6)]
-        [TestCase((int)7)]
-        [TestCase((uint)8)]
-        [TestCase((long)9)]
-        [TestCase((ulong)10)]
-        [TestCaseSource(typeof(TestDataSource), nameof(TestDataSource.UseExtendFloats))]
-        [TestCaseSource(typeof(TestDataSource), nameof(TestDataSource.UseExtendInts))]
-        public void CloneTest<T>(T src) where T : INumberBase<T> {
-            var A = TTorch.Arange(src);
-            var B = A.Clone();
-            Assert.AreEqual(A, B);
-        }
 
         [TestCase((float)1)]
         [TestCase((double)2)]
@@ -68,58 +50,20 @@ namespace Zyl.TensorTorch.Tests {
 
         [TestCase((float)1)]
         [TestCase((double)2)]
+        [TestCase((sbyte)3)]
+        [TestCase((byte)4)]
+        [TestCase((short)5)]
+        [TestCase((ushort)6)]
+        [TestCase((int)7)]
+        [TestCase((uint)8)]
+        [TestCase((long)9)]
+        [TestCase((ulong)10)]
         [TestCaseSource(typeof(TestDataSource), nameof(TestDataSource.UseExtendFloats))]
-        public void MeanTorchTest<T>(T src) where T : IFloatingPoint<T> {
-            const int rank = 2;
-            const int rank1 = 1;
-            const int rankAll = 1;
-            const nint one = 1;
-            const nint m = 5, n = 4;
-            const nint numel = m * n;
-            T numelT = T.CreateChecked(numel);
-            Tensor<T> A = TTorch.Arange(numelT).Reshape(5, 4);
-            T sumData = Tensor.Average(A.AsReadOnlyTensorSpan());
-            Tensor<T> D;
-
-            D = A.MeanTorch([]);
-            Assert.AreEqual(rankAll, D.Rank);
-            Assert.AreEqual(one, D.FlattenedLength);
-            Assert.AreEqual(sumData, D[0]);
-
-            D = A.MeanTorch([], true);
-            Assert.AreEqual(rank, D.Rank);
-            Assert.AreEqual(one, D.FlattenedLength);
-            Assert.AreEqual(sumData, Tensor.Average(D.AsReadOnlyTensorSpan()));
-
-            D = A.MeanTorch([0]);
-            Assert.AreEqual(rank1, D.Rank);
-            Assert.AreEqual(n, D.FlattenedLength);
-            Assert.AreEqual(sumData, Tensor.Average(D.AsReadOnlyTensorSpan()));
-
-            D = A.MeanTorch([0], true);
-            Assert.AreEqual(rank, D.Rank);
-            Assert.AreEqual(n, D.FlattenedLength);
-            Assert.AreEqual(sumData, Tensor.Average(D.AsReadOnlyTensorSpan()));
-
-            D = A.MeanTorch([1]);
-            Assert.AreEqual(rank1, D.Rank);
-            Assert.AreEqual(m, D.FlattenedLength);
-            Assert.AreEqual(sumData, Tensor.Average(D.AsReadOnlyTensorSpan()));
-
-            D = A.MeanTorch([1], true);
-            Assert.AreEqual(rank, D.Rank);
-            Assert.AreEqual(m, D.FlattenedLength);
-            Assert.AreEqual(sumData, Tensor.Average(D.AsReadOnlyTensorSpan()));
-
-            D = A.MeanTorch([0, 1]);
-            Assert.AreEqual(rankAll, D.Rank);
-            Assert.AreEqual(one, D.FlattenedLength);
-            Assert.AreEqual(sumData, Tensor.Average(D.AsReadOnlyTensorSpan()));
-
-            D = A.MeanTorch([0, 1], true);
-            Assert.AreEqual(rank, D.Rank);
-            Assert.AreEqual(one, D.FlattenedLength);
-            Assert.AreEqual(sumData, Tensor.Average(D.AsReadOnlyTensorSpan()));
+        [TestCaseSource(typeof(TestDataSource), nameof(TestDataSource.UseExtendInts))]
+        public void CloneTest<T>(T src) where T : INumberBase<T> {
+            var A = TTorch.Arange(src);
+            var B = A.Clone();
+            Assert.AreEqual(A, B);
         }
 
         [TestCase((float)1)]
@@ -141,8 +85,9 @@ namespace Zyl.TensorTorch.Tests {
             const nint one = 1;
             const nint m = 5, n = 4;
             const nint numel = m * n;
+            Writer.WriteLine(string.Format("SumTorchTest<{0}>", src));
             T numelT = T.CreateChecked(numel);
-            Tensor<T> A = TTorch.Arange(numelT).Reshape(5, 4);
+            Tensor<T> A = TTorch.Arange(numelT).Reshape(m, n);
             T sumData = Tensor.Sum(A.AsReadOnlyTensorSpan());
             Tensor<T> D;
 

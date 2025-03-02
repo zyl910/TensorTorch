@@ -395,9 +395,15 @@ namespace Zyl.SampleD2L.Chapter02Preliminaries {
             // x, y, torch.dot(x, y)
             // (tensor([0., 1., 2., 3.]), tensor([1., 1., 1., 1.]), tensor(6.))
             // 注意，(我们可以通过执行按元素乘法，然后进行求和来表示两个向量的点积)：
-            // 
+            var y = TTorch.Ones<float>([4]);
+            writer.WriteLine("x: {0}", x.ToString());
+            writer.WriteLine("y: {0}", y.ToString());
+            writer.WriteLine("torch.dot(x, y): {0}", Tensor.Dot(x.AsReadOnlyTensorSpan(), y));
+
             // torch.sum(x * y)
             // tensor(6.)
+            writer.WriteLine("torch.sum(x * y): {0}", Tensor.Sum(Tensor.Multiply(x.AsReadOnlyTensorSpan(), y).AsReadOnlyTensorSpan()));
+
             // 点积在很多场合都很有用。 例如，给定一组由向量𝐱∈ℝ𝑑
             // 表示的值， 和一组由𝐰∈ℝ𝑑
             // 表示的权重。 𝐱
@@ -433,6 +439,10 @@ namespace Zyl.SampleD2L.Chapter02Preliminaries {
             // 
             // A.shape, x.shape, torch.mv(A, x)
             // (torch.Size([5, 4]), torch.Size([4]), tensor([ 14.,  38.,  62.,  86., 110.]))
+            writer.WriteLine("A.shape: {0}", TTorch.ToString(A.Lengths));
+            writer.WriteLine("x.shape: {0}", TTorch.ToString(x.Lengths));
+            writer.WriteLine("torch.mv(A, x): {0}", A.MultiplyVector(x).ToString());
+
             // 矩阵-矩阵乘法
             // 在掌握点积和矩阵-向量积的知识后， 那么矩阵-矩阵乘法（matrix-matrix multiplication）应该很简单。
             // 

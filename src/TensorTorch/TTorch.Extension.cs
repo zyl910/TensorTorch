@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Buffers;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Numerics;
@@ -207,6 +208,99 @@ namespace Zyl.TensorTorch {
             T totalT = T.CreateChecked(total);
             Tensor<T> dst = Tensor.Divide(sumed.AsReadOnlyTensorSpan(), totalT);
             return dst;
+        }
+
+        // -- torch.mv(input, vec, *, out=None)
+
+        /// <summary>
+        /// Performs a matrix-vector product of the matrix input and the vector vec. If input is a (n×m) tensor, vec is a 1-D tensor of size m, result will be 1-D tensor of size n (执行矩阵input和向量vec的矩阵向量积。若输入是（n×m）张量，则vec是大小为m的1-D张量，结果将是大小为n的1-D张量). Like `torch.mv`.
+        /// </summary>
+        /// <typeparam name="T">The element type (元素类型).</typeparam>
+        /// <param name="input">A matrix to be multiplied (要相乘的矩阵).</param>
+        /// <param name="vec">A vector to be multiplied (要相乘的向量).</param>
+        /// <param name="output">Returns new Tensor (返回新张量).</param>
+        /// <exception cref="ArgumentException">input is not a matrix; vec is not a vector; output is not a vector; The number of elements in the vec parameter does not match the number of columns in the input matrix</exception>
+        public static void MultiplyVector<T>(this in ReadOnlyTensorSpan<T> input, in ReadOnlyTensorSpan<T> vec, in TensorSpan<T> output)
+                where T : IAdditionOperators<T, T, T>, IAdditiveIdentity<T, T>, IMultiplicativeIdentity<T, T>, IMultiplyOperators<T, T, T> {
+            if (!IsMatrix(input.Lengths, out nint rows, out nint cols)) {
+                throw new ArgumentException(string.Format("The input parameter ({0}) is not a matrix!", ToString(input.Lengths)), nameof(input));
+            }
+            if (!IsVector(vec.Lengths, out nint numel, out bool isColumn)) {
+                throw new ArgumentException(string.Format("The vec parameter ({0}) is not a vector!", ToString(vec.Lengths)), nameof(vec));
+            }
+            if (cols != numel) {
+                throw new ArgumentException(string.Format("The number of elements in the vec parameter ({0}) does not match the number of columns in the input matrix ({1})!", ToString(vec.Lengths), ToString(input.Lengths)), nameof(vec));
+            }
+            if (!IsVector(output.Lengths, out nint numelOutput, out bool isColumnOutput)) {
+                throw new ArgumentException(string.Format("The output parameter ({0}) is not a vector!", ToString(output.Lengths)), nameof(output));
+            }
+            if (numelOutput < rows) {
+                throw new ArgumentException(string.Format("The number of elements in the output parameter ({0}) does less then the number of rows in the input matrix ({1})!", ToString(output.Lengths), ToString(input.Lengths)), nameof(output));
+            }
+            if (isColumnOutput) {
+                MultiplyVector_Body(input, vec, output.Reshape([numelOutput]), rows, cols);
+            } else {
+                MultiplyVector_Body(input, vec, output, rows, cols);
+            }
+            _ = isColumn;
+        }
+
+        /// <inheritdoc cref="MultiplyVector{T}(ReadOnlyTensorSpan{T}, ReadOnlyTensorSpan{T}, TensorSpan{T})"/>
+        /// <param name="rows">Number of rows (行数).</param>
+        /// <param name="cols">Number of columns (列数).</param>
+        private static void MultiplyVector_Body<T>(in ReadOnlyTensorSpan<T> input, in ReadOnlyTensorSpan<T> vec, in TensorSpan<T> output, nint rows, nint cols)
+                where T : IAdditionOperators<T, T, T>, IAdditiveIdentity<T, T>, IMultiplicativeIdentity<T, T>, IMultiplyOperators<T, T, T> {
+            Debug.Assert(2 == input.Rank, "The input parameter is not a matrix!");
+            scoped ReadOnlyTensorSpan<T> vec1;
+            if (vec.Rank > 1) {
+                vec1 = vec.Reshape([vec.FlattenedLength]);
+            } else {
+                vec1 = vec;
+            }
+            NRange rangeCols = new NRange(0, cols); // NRange.All;
+            for (nint i = 0; i < rows; ++i) {
+                NRange rangeRow = new NRange(i, i + 1);
+                T item = Tensor.Dot(input.Slice(rangeRow, rangeCols), vec1);
+                output[i] = item;
+            }
+        }
+
+        /// <summary>
+        /// Performs a matrix-vector product of the matrix input and the vector vec. If input is a (n×m) tensor, vec is a 1-D tensor of size m, result will be 1-D tensor of size n (执行矩阵input和向量vec的矩阵向量积。若输入是（n×m）张量，则vec是大小为m的1-D张量，结果将是大小为n的1-D张量). Like `torch.mv`.
+        /// </summary>
+        /// <typeparam name="T">The element type (元素类型).</typeparam>
+        /// <param name="input">A matrix to be multiplied (要相乘的矩阵).</param>
+        /// <param name="vec">A vector to be multiplied (要相乘的向量).</param>
+        /// <param name="pinned">A Boolean whether the underlying data should be pinned or not (一个布尔值，表示是否应固定基础数据).</param>
+        /// <returns>Returns new Tensor (返回新张量).</returns>
+        /// <exception cref="ArgumentException">input is not a matrix; vec is not a vector; The number of elements in the vec parameter does not match the number of columns in the input matrix</exception>
+        public static Tensor<T> MultiplyVector<T>(this in ReadOnlyTensorSpan<T> input, in ReadOnlyTensorSpan<T> vec, bool pinned = false)
+                where T : IAdditionOperators<T, T, T>, IAdditiveIdentity<T, T>, IMultiplicativeIdentity<T, T>, IMultiplyOperators<T, T, T> {
+            if (!IsMatrix(input.Lengths, out nint rows, out nint cols)) {
+                throw new ArgumentException(string.Format("The input parameter ({0}) is not a matrix!", ToString(input.Lengths)), nameof(input));
+            }
+            if (!IsVector(vec.Lengths, out nint numel, out bool isColumn)) {
+                throw new ArgumentException(string.Format("The vec parameter ({0}) is not a vector!", ToString(vec.Lengths)), nameof(vec));
+            }
+            if (cols != numel) {
+                throw new ArgumentException(string.Format("The number of elements in the vec parameter ({0}) does not match the number of columns in the input matrix ({1})!", ToString(vec.Lengths), ToString(input.Lengths)), nameof(vec));
+            }
+            Tensor<T> output = Tensor.CreateUninitialized<T>([rows], pinned);
+            MultiplyVector_Body(input, vec, output.AsTensorSpan(), rows, cols);
+            _ = isColumn;
+            return output;
+        }
+
+        /// <inheritdoc cref="MultiplyVector{T}(ReadOnlyTensorSpan{T}, ReadOnlyTensorSpan{T}, bool)"/>
+        public static Tensor<T> MultiplyVector<T>(this Tensor<T> input, in ReadOnlyTensorSpan<T> vec, bool pinned = false)
+                where T : IAdditionOperators<T, T, T>, IAdditiveIdentity<T, T>, IMultiplicativeIdentity<T, T>, IMultiplyOperators<T, T, T> {
+            return MultiplyVector(input.AsReadOnlyTensorSpan(), vec, pinned);
+        }
+
+        /// <inheritdoc cref="MultiplyVector{T}(ReadOnlyTensorSpan{T}, ReadOnlyTensorSpan{T}, bool)"/>
+        public static Tensor<T> MultiplyVector<T>(this Tensor<T> input, Tensor<T> vec, bool pinned = false)
+                where T : IAdditionOperators<T, T, T>, IAdditiveIdentity<T, T>, IMultiplicativeIdentity<T, T>, IMultiplyOperators<T, T, T> {
+            return MultiplyVector(input.AsReadOnlyTensorSpan(), vec.AsReadOnlyTensorSpan(), pinned);
         }
 
         /// <summary>
