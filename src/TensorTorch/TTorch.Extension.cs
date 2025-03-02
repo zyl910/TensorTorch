@@ -156,6 +156,59 @@ namespace Zyl.TensorTorch {
             }
         }
 
+        // -- torch.mean(input, dim, keepdim=False, *, dtype=None, out=None) 
+
+        /// <summary>
+        /// This function is used to compute the average of all elements in the input tensor. Support dim parameter (此函数用于对输入张量中所有元素计算平均值. 支持 dim 参数. 支持 dim 参数). Like `torch.mean`.
+        /// </summary>
+        /// <typeparam name="T">The element type (元素类型).</typeparam>
+        /// <param name="source">The source tensor (源张量).</param>
+        /// <param name="dim">Specifies the dimension(s) along which the sum is computed. If not specified, the sum is computed over all elements (指定计算求和所依据的维度. 如果未指定, 则计算所有元素的总和).</param>
+        /// <param name="keepdim">Whether the output tensor has dimension retained or not (输出张量是否保留维度).</param>
+        /// <param name="pinned">A Boolean whether the underlying data should be pinned or not (一个布尔值，表示是否应固定基础数据).</param>
+        /// <returns>Return a new tensor that stores the average results (返回新张量, 存放了平均值结果).</returns>
+        /// <seealso cref="Tensor.Average{T}(in ReadOnlyTensorSpan{T})"/>
+        public static Tensor<T> MeanTorch<T>(this Tensor<T> source, Span<int> dim, bool keepdim = false, bool pinned = false) where T : IFloatingPoint<T> {
+            return MeanTorch(source.AsReadOnlyTensorSpan(), dim, keepdim, pinned);
+        }
+
+        /// <summary>
+        /// This function is used to compute the average of all elements in the input tensor. Support dim parameter (此函数用于对输入张量中所有元素计算平均值. 支持 dim 参数. 支持 dim 参数). Like `torch.mean`.
+        /// </summary>
+        /// <typeparam name="T">The element type (元素类型).</typeparam>
+        /// <param name="source">The source tensor (源张量).</param>
+        /// <param name="dim">Specifies the dimension(s) along which the sum is computed. If not specified, the average is computed over all elements (指定计算求和所依据的维度. 如果未指定, 则计算所有元素的平均值).</param>
+        /// <param name="keepdim">Whether the output tensor has dimension retained or not (输出张量是否保留维度).</param>
+        /// <param name="pinned">A Boolean whether the underlying data should be pinned or not (一个布尔值，表示是否应固定基础数据).</param>
+        /// <returns>Return a new tensor that stores the average results (返回新张量, 存放了平均值结果).</returns>
+        /// <seealso cref="Tensor.Average{T}(in ReadOnlyTensorSpan{T})"/>
+        public static Tensor<T> MeanTorch<T>(this in ReadOnlyTensorSpan<T> source, Span<int> dim, bool keepdim = false, bool pinned = false) where T : IFloatingPoint<T> {
+            if (source.IsEmpty) {
+                return Tensor<T>.Empty;
+            }
+
+            // If not specified, the sum is computed over all elements.
+            int rank = source.Rank;
+            Span<nint> lengthsDst = stackalloc nint[rank];
+            if (dim.IsEmpty) {
+                T sumData = Tensor.Average(source);
+                if (!keepdim) {
+                    lengthsDst = lengthsDst.Slice(0, 1);
+                }
+                lengthsDst.Fill(1);
+                Tensor<T> rt = Tensor.CreateUninitialized<T>(lengthsDst);
+                rt.Fill(sumData);
+                return rt;
+            }
+
+            // Fill values.
+            Tensor<T> sumed = SumTorch(source, dim, keepdim, pinned);
+            nint total = source.FlattenedLength / sumed.FlattenedLength;
+            T totalT = T.CreateChecked(total);
+            Tensor<T> dst = Tensor.Divide(sumed.AsReadOnlyTensorSpan(), totalT);
+            return dst;
+        }
+
         /// <summary>
         /// Forms a slice out of the given tensor. The parameters are similar to PyTorch (从给定的张量中形成一个切片. 参数与 PyTorch 相似).
         /// </summary>
@@ -414,6 +467,7 @@ namespace Zyl.TensorTorch {
         /// <param name="keepdim">Whether the output tensor has dimension retained or not (输出张量是否保留维度).</param>
         /// <param name="pinned">A Boolean whether the underlying data should be pinned or not (一个布尔值，表示是否应固定基础数据).</param>
         /// <returns>Return a new tensor that stores the sum results (返回新张量, 存放了求和结果).</returns>
+        /// <seealso cref="Tensor.Sum{T}(in ReadOnlyTensorSpan{T})"/>
         public static Tensor<T> SumTorch<T>(this Tensor<T> source, Span<int> dim, bool keepdim = false, bool pinned = false) where T : IAdditionOperators<T, T, T>, IAdditiveIdentity<T, T> {
             return SumTorch(source.AsReadOnlyTensorSpan(), dim, keepdim, pinned);
         }
@@ -427,6 +481,7 @@ namespace Zyl.TensorTorch {
         /// <param name="keepdim">Whether the output tensor has dimension retained or not (输出张量是否保留维度).</param>
         /// <param name="pinned">A Boolean whether the underlying data should be pinned or not (一个布尔值，表示是否应固定基础数据).</param>
         /// <returns>Return a new tensor that stores the sum results (返回新张量, 存放了求和结果).</returns>
+        /// <seealso cref="Tensor.Sum{T}(in ReadOnlyTensorSpan{T})"/>
         public static Tensor<T> SumTorch<T>(this in ReadOnlyTensorSpan<T> source, Span<int> dim, bool keepdim = false, bool pinned = false) where T : IAdditionOperators<T, T, T>, IAdditiveIdentity<T, T> {
             if (source.IsEmpty) {
                 return Tensor<T>.Empty;

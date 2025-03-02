@@ -336,10 +336,16 @@ namespace Zyl.SampleD2L.Chapter02Preliminaries {
             // 
             // A.mean(), A.sum() / A.numel()
             // (tensor(9.5000), tensor(9.5000))
+            writer.WriteLine("A.mean: {0}", Tensor.Average(A.AsReadOnlyTensorSpan()));
+            writer.WriteLine("A.sum() / A.numel(): {0}", Tensor.Sum(A.AsReadOnlyTensorSpan()) / A.FlattenedLength);
+            writer.WriteLine("A.MeanTorch: {0}", A.MeanTorch([]).ToString());
+
             // 同样，计算平均值的函数也可以沿指定轴降低张量的维度。
             // 
             // A.mean(axis=0), A.sum(axis=0) / A.shape[0]
             // (tensor([ 8.,  9., 10., 11.]), tensor([ 8.,  9., 10., 11.]))
+            writer.WriteLine("A.mean(axis=0): {0}", A.MeanTorch([0]).ToString());
+            writer.WriteLine("A.sum(axis=0) / A.shape[0]: {0}", Tensor.Divide(A.SumTorch([0]).AsReadOnlyTensorSpan(), (float)A.Lengths[0]).ToString());
 
             // 非降维求和
             // :label:subseq_lin-alg-non-reduction
@@ -374,6 +380,8 @@ namespace Zyl.SampleD2L.Chapter02Preliminaries {
             //         [12., 15., 18., 21.],
             //         [24., 28., 32., 36.],
             //         [40., 45., 50., 55.]])
+            // TODO: cumsum
+
             // 点积（Dot Product）
             // 我们已经学习了按元素操作、求和及平均值。 另一个最基本的操作之一是点积。 给定两个向量𝐱,𝐲∈ℝ𝑑
             // ， 它们的点积（dot product）𝐱⊤𝐲

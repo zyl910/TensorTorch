@@ -7,6 +7,7 @@ Methods:
 - Arange: This method returns a tensor containing values from a given interval [start, end) with a specified step size. When the step size is not an integer, floating-point rounding errors may occur, so it is recommended to subtract a small epsilon from the end value for consistency (此方法返回一个张量，其中包含具有指定步长的给定区间 [start，end) 的值。当步长不是整数时，可能会出现浮点舍入错误，因此建议从结束值中减去一个较小的 epsilon 以保持一致性). Like `torch.arange`.
 - CreateAndFill: Create and fill with the given value (创建并使用指定值填充).
 - FromNDArray: Create tensor by N-dimensional array (根据N维数组创建张量). Like `torch.tensor`.
+- MeanTorch: This function is used to compute the average of all elements in the input tensor. Support dim parameter (此函数用于对输入张量中所有元素计算平均数. 支持 dim 参数). Like `torch.mean`.
 - Ones: This method creates a tensor of a specified shape, where each element is initialized to the scalar value 1 (此方法用于创建指定形状的张量，其中每个元素都初始化为标量值1). Like `torch.ones`.
 - SumTorch: This function is used to compute the sum of all elements in the input tensor. Support dim parameter (此函数用于对输入张量中所有元素计算求和. 支持 dim 参数). Like `torch.sum`.
 - ToString: ReadOnlySpan to String.
@@ -35,7 +36,6 @@ Member of torch (torch 的成员).
 | exp        | Tensor.Exp                               | Natural exponential function (自然指数函数)    |
 | ones       | TTorch.Ones                              | Create and fill 1 (创建并填充1).              |
 | randn      | Tensor.CreateAndFillGaussianNormalDistribution | Creates and initializes it with random data in a gaussian normal distribution (创建并使用高斯正态分布的随机数据初始化). |
-| sum        | Tensor.Sum                               | Sum (求和)                                 |
 | tensor     | TTorch.FromNDArray                       | Create tensor by N-dimensional array (根据N维数组创建张量) |
 | zeros      | TTorch.Zeros                             | Create and fill 0 (创建并填充0).              |
 | zeros_like | TTorch.ZerosLike                         | Returns a tensor filled with the scalar value 0, with the same size as input (返回一个填充了标量值0的张量，其大小与 input 相同) |
@@ -50,6 +50,7 @@ Member of  tensor object (张量对象的成员).
 | x[ranges]=C  | `X.FillRange(C, ranges)` | Fill slice (填充切片). Or `X.AsTensorSpan()[ranges].FillRange(C)`. |
 | x.clone      | x.Clone                  | Clone(克隆).                               |
 | x.item       | x.GetPinnableReference   | To scalar (转为标量).                        |
+| A.mean       | A.MeanTorch              | Average by dimensions (根据维度的平均数)         |
 | x.numel      | x.FlattenedLength        | Flattened length (平整后的总长度).              |
 | x.reshape    | x.Reshape                | Reshape (变形).                            |
 | x.shape      | x.Lengths                | Lengths (各维的长度).                         |
