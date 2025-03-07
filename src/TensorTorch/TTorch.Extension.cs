@@ -222,16 +222,16 @@ namespace Zyl.TensorTorch {
         /// <exception cref="ArgumentException">input is not a matrix; vec is not a vector; output is not a vector; The number of elements in the vec parameter does not match the number of columns in the input matrix</exception>
         public static void MultiplyVector<T>(this in ReadOnlyTensorSpan<T> input, in ReadOnlyTensorSpan<T> vec, in TensorSpan<T> output)
                 where T : IAdditionOperators<T, T, T>, IAdditiveIdentity<T, T>, IMultiplicativeIdentity<T, T>, IMultiplyOperators<T, T, T> {
-            if (!IsMatrix(input.Lengths, out nint rows, out nint cols)) {
+            if (!TensorCheck.IsMatrix(input.Lengths, out nint rows, out nint cols)) {
                 throw new ArgumentException(string.Format("The input parameter ({0}) is not a matrix!", ToString(input.Lengths)), nameof(input));
             }
-            if (!IsVector(vec.Lengths, out nint numel, out bool isColumn)) {
+            if (!TensorCheck.IsVector(vec.Lengths, out nint numel, out bool isColumn)) {
                 throw new ArgumentException(string.Format("The vec parameter ({0}) is not a vector!", ToString(vec.Lengths)), nameof(vec));
             }
             if (cols != numel) {
                 throw new ArgumentException(string.Format("The number of elements in the vec parameter ({0}) does not match the number of columns in the input matrix ({1})!", ToString(vec.Lengths), ToString(input.Lengths)), nameof(vec));
             }
-            if (!IsVector(output.Lengths, out nint numelOutput, out bool isColumnOutput)) {
+            if (!TensorCheck.IsVector(output.Lengths, out nint numelOutput, out bool isColumnOutput)) {
                 throw new ArgumentException(string.Format("The output parameter ({0}) is not a vector!", ToString(output.Lengths)), nameof(output));
             }
             if (numelOutput < rows) {
@@ -276,10 +276,10 @@ namespace Zyl.TensorTorch {
         /// <exception cref="ArgumentException">input is not a matrix; vec is not a vector; The number of elements in the vec parameter does not match the number of columns in the input matrix</exception>
         public static Tensor<T> MultiplyVector<T>(this in ReadOnlyTensorSpan<T> input, in ReadOnlyTensorSpan<T> vec, bool pinned = false)
                 where T : IAdditionOperators<T, T, T>, IAdditiveIdentity<T, T>, IMultiplicativeIdentity<T, T>, IMultiplyOperators<T, T, T> {
-            if (!IsMatrix(input.Lengths, out nint rows, out nint cols)) {
+            if (!TensorCheck.IsMatrix(input.Lengths, out nint rows, out nint cols)) {
                 throw new ArgumentException(string.Format("The input parameter ({0}) is not a matrix!", ToString(input.Lengths)), nameof(input));
             }
-            if (!IsVector(vec.Lengths, out nint numel, out bool isColumn)) {
+            if (!TensorCheck.IsVector(vec.Lengths, out nint numel, out bool isColumn)) {
                 throw new ArgumentException(string.Format("The vec parameter ({0}) is not a vector!", ToString(vec.Lengths)), nameof(vec));
             }
             if (cols != numel) {

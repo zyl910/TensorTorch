@@ -176,10 +176,34 @@ namespace Zyl.SampleD2L.Chapter02Preliminaries {
             //         [ 1,  5,  9, 13, 17],
             //         [ 2,  6, 10, 14, 18],
             //         [ 3,  7, 11, 15, 19]])
+            writer.WriteLine("A: {0}", A.ToString());
+            writer.WriteLine("A.ToArray: {0}", TTorch.ToString((ReadOnlySpan<int>)A.ToArray().AsSpan()));
             var B = Tensor.Transpose(A);
             writer.WriteLine("A.T: {0}", B.ToString());
             writer.WriteLine("A.T.Strides: {0}", TTorch.ToString(B.Strides));
-            writer.WriteLine("A: {0}", A.ToString());
+
+            // Column-Major Order Matrix (列主序矩阵)
+            bool testColumnMajor = true;
+            if (testColumnMajor) {
+                try {
+                    var BArray = B.ToArray();
+                    writer.WriteLine("A.T.ToArray: {0}", TTorch.ToString((ReadOnlySpan<int>)B.ToArray().AsSpan()));
+                    ReadOnlySpan<nint> lengths = B.Lengths;
+                    ReadOnlySpan<nint> strides = B.Strides;
+                    //ReadOnlySpan<nint> startCol = stackalloc nint[] { 0, 0 };
+                    ReadOnlySpan<nint> lengthsCol = stackalloc nint[] { lengths[1], lengths[0] };
+                    ReadOnlySpan<nint> stridesCol = stackalloc nint[] { 1, lengths[0] };
+                    var BCol = new TensorSpan<int>(BArray, 0, lengthsCol, stridesCol); // .NET 9.0: System.ArgumentOutOfRangeException: Specified argument was out of the range of valid values. (Parameter 'Strides cannot be less than 0.'
+                    writer.WriteLine("BCol: {0}", B.ToString());
+                    writer.WriteLine("BCol.Strides: {0}", TTorch.ToString(B.Strides));
+                    var flattenArray = new int[BCol.FlattenedLength];
+                    BCol.FlattenTo(flattenArray);
+                    writer.WriteLine("BCol.FlattenTo: {0}", TTorch.ToString((ReadOnlySpan<int>)flattenArray.AsSpan()));
+                } catch (Exception ex) {
+                    writer.WriteLine("Fail on testColumnMajor! {0}", ex.ToString());
+                }
+                writer.WriteLine();
+            }
 
             // 作为方阵的一种特殊类型，[对称矩阵（symmetric matrix）𝐀
             // 等于其转置：𝐀=𝐀⊤

@@ -2,19 +2,17 @@
 
 ## TTorch
 
-Methods:
+Methods (方法):
 
 - Arange: This method returns a tensor containing values from a given interval [start, end) with a specified step size. When the step size is not an integer, floating-point rounding errors may occur, so it is recommended to subtract a small epsilon from the end value for consistency (此方法返回一个张量，其中包含具有指定步长的给定区间 [start，end) 的值。当步长不是整数时，可能会出现浮点舍入错误，因此建议从结束值中减去一个较小的 epsilon 以保持一致性). Like `torch.arange`.
 - CreateAndFill: Create and fill with the given value (创建并使用指定值填充).
 - FromNDArray: Create tensor by N-dimensional array (根据N维数组创建张量). Like `torch.tensor`.
-- IsMatrix: Is it a matrix (是不是矩阵).
-- IsVector: Is it a vector (是不是向量).
 - Ones: This method creates a tensor of a specified shape, where each element is initialized to the scalar value 1 (此方法用于创建指定形状的张量，其中每个元素都初始化为标量值1). Like `torch.ones`.
 - ToString: ReadOnlySpan to String.
 - Zeros: This method returns a tensor filled with zeros that has a specified shape (此方法返回一个填充有具有指定形状的零的张量). Like `torch.zeros`.
 - ZerosLike: Returns a tensor filled with the scalar value 0, with the same size as input (返回一个填充了标量值0的张量，其大小与 input 相同). Like `torch.zeros_like`.
 
-Extension Methods:
+Extension Methods (扩展方法):
 
 - Clone: Returns a copy of source data (返回源数据的拷贝). Like `torch.clone`.
 - FillRange: Fills the contents of this ranges with the given value (用给定值填充此范围的内容).
@@ -27,6 +25,13 @@ Extension Methods:
 - To3DArray: Create 3-dimensional array by tensor. The rank of a tensor must be equal to 3 (根据张量创建3维数组. 张量的秩必须为 3).
 - To4DArray: Create 4-dimensional array by tensor. The rank of a tensor must be equal to 4 (根据张量创建4维数组. 张量的秩必须为 4).
 - ToNDArray: Create N-dimensional array by tensor  (根据张量创建N维数组).
+
+## TensorCheck
+
+Methods (方法):
+
+- IsMatrix: Is it a matrix (是不是矩阵).
+- IsVector: Is it a vector (是不是向量).
 
 ## Mapping to PyTorch Method (PyTorch 方法的对照)
 
