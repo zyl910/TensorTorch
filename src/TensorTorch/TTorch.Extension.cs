@@ -84,7 +84,7 @@ namespace Zyl.TensorTorch {
         /// <param name="lengths">Tensor lengths (张量长度).</param>
         /// <param name="level">Current level (当前层级).</param>
         /// <param name="indices">Indices during looping(循环时的索引).</param>
-        private static void FillRange_Core<T>(this Tensor<T> source, T value, scoped ReadOnlySpan<NRange> ranges, scoped ReadOnlySpan<nint> lengths, int level, scoped Span<nint> indices) {
+        private static void FillRange_Core<T>(Tensor<T> source, T value, scoped ReadOnlySpan<NRange> ranges, scoped ReadOnlySpan<nint> lengths, int level, scoped Span<nint> indices) {
             int rank = lengths.Length;
             NRange range = ranges[level];
            (nint offset, nint length) = range.GetOffsetAndLength(lengths[level]);
@@ -245,7 +245,7 @@ namespace Zyl.TensorTorch {
             _ = isColumn;
         }
 
-        /// <inheritdoc cref="MultiplyVector{T}(ReadOnlyTensorSpan{T}, ReadOnlyTensorSpan{T}, TensorSpan{T})"/>
+        /// <inheritdoc cref="MultiplyVector{T}(in ReadOnlyTensorSpan{T}, in ReadOnlyTensorSpan{T}, in TensorSpan{T})"/>
         /// <param name="rows">Number of rows (行数).</param>
         /// <param name="cols">Number of columns (列数).</param>
         private static void MultiplyVector_Body<T>(in ReadOnlyTensorSpan<T> input, in ReadOnlyTensorSpan<T> vec, in TensorSpan<T> output, nint rows, nint cols)
@@ -291,13 +291,7 @@ namespace Zyl.TensorTorch {
             return output;
         }
 
-        /// <inheritdoc cref="MultiplyVector{T}(ReadOnlyTensorSpan{T}, ReadOnlyTensorSpan{T}, bool)"/>
-        public static Tensor<T> MultiplyVector<T>(this Tensor<T> input, in ReadOnlyTensorSpan<T> vec, bool pinned = false)
-                where T : IAdditionOperators<T, T, T>, IAdditiveIdentity<T, T>, IMultiplicativeIdentity<T, T>, IMultiplyOperators<T, T, T> {
-            return MultiplyVector(input.AsReadOnlyTensorSpan(), vec, pinned);
-        }
-
-        /// <inheritdoc cref="MultiplyVector{T}(ReadOnlyTensorSpan{T}, ReadOnlyTensorSpan{T}, bool)"/>
+        /// <inheritdoc cref="MultiplyVector{T}(in ReadOnlyTensorSpan{T}, in ReadOnlyTensorSpan{T}, bool)"/>
         public static Tensor<T> MultiplyVector<T>(this Tensor<T> input, Tensor<T> vec, bool pinned = false)
                 where T : IAdditionOperators<T, T, T>, IAdditiveIdentity<T, T>, IMultiplicativeIdentity<T, T>, IMultiplyOperators<T, T, T> {
             return MultiplyVector(input.AsReadOnlyTensorSpan(), vec.AsReadOnlyTensorSpan(), pinned);
