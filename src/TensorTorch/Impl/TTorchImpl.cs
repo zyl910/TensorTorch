@@ -1,0 +1,13 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Zyl.TensorTorch.Impl {
+    /// <summary>
+    /// implements of TTorch.
+    /// </summary>
+    public static partial class TTorchImpl {
+    }
+}

@@ -7,6 +7,7 @@ using System.Numerics.Tensors;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using Zyl.TensorTorch.Impl;
 
 namespace Zyl.TensorTorch {
 #pragma warning disable SYSLIB5001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
@@ -185,16 +186,7 @@ namespace Zyl.TensorTorch {
         /// <param name="source">The source.</param>
         /// <param name="separator">The separator.</param>
         public static void ToString<T>(StringBuilder builder, ReadOnlySpan<T> source, string? separator = null) {
-            if (null == separator) separator = ", ";
-            builder.Append('[');
-            for (int i = 0; i < source.Length; i++) {
-                if (i > 0) {
-                    builder.Append(separator);
-                }
-                T p = source[i];
-                builder.Append(p);
-            }
-            builder.Append(']');
+            TTorchImpl.ToString(builder, source, separator);
         }
 
         /// <summary>
@@ -205,9 +197,7 @@ namespace Zyl.TensorTorch {
         /// <param name="separator">The separator.</param>
         /// <returns>Returns string.</returns>
         public static string ToString<T>(ReadOnlySpan<T> source, string? separator = null) {
-            StringBuilder builder = new StringBuilder();
-            ToString(builder, source, separator);
-            return builder.ToString();
+            return TTorchImpl.ToString(source, separator);
         }
 
         // -- torch.zeros(size, out=None, dtype=None, layout=torch.strided, device=None, requires_grad=False)
