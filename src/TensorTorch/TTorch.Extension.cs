@@ -241,9 +241,9 @@ namespace Zyl.TensorTorch {
         }
 
         /// <inheritdoc cref="MultiplyVector{T}(in ReadOnlyTensorSpan{T}, in ReadOnlyTensorSpan{T}, bool)"/>
-        public static Tensor<T> MultiplyVector<T>(this Tensor<T> input, Tensor<T> vec, bool pinned = false)
+        public static Tensor<T> MultiplyVector<T>(this Tensor<T> input, in ReadOnlyTensorSpan<T> vec, bool pinned = false)
                 where T : IAdditionOperators<T, T, T>, IAdditiveIdentity<T, T>, IMultiplicativeIdentity<T, T>, IMultiplyOperators<T, T, T> {
-            return MultiplyVector(input.AsReadOnlyTensorSpan(), vec.AsReadOnlyTensorSpan(), pinned);
+            return MultiplyVector(input.AsReadOnlyTensorSpan(), vec, pinned);
         }
 
         /// <summary>

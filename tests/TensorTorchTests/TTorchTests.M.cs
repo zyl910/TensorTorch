@@ -94,6 +94,18 @@ namespace Zyl.TensorTorch.Tests {
             Assert.AreEqual(m, expected.FlattenedLength);
 
             // The vec is row Vector.
+            dst = A.MultiplyVector(x, false);
+            Assert.AreEqual(1, dst.Rank);
+            Assert.AreEqual(m, dst.FlattenedLength);
+            Assert.AreEqual(expected, dst);
+
+            // The vec is row Vector - AsTensorSpan.
+            dst = A.MultiplyVector(x.AsTensorSpan(), false);
+            Assert.AreEqual(1, dst.Rank);
+            Assert.AreEqual(m, dst.FlattenedLength);
+            Assert.AreEqual(expected, dst);
+
+            // The vec is row Vector - AsReadOnlyTensorSpan.
             dst = A.MultiplyVector(x.AsReadOnlyTensorSpan(), false);
             Assert.AreEqual(1, dst.Rank);
             Assert.AreEqual(m, dst.FlattenedLength);

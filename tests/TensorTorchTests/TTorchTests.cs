@@ -64,6 +64,10 @@ namespace Zyl.TensorTorch.Tests {
             var A = TTorch.Arange(src);
             var B = A.Clone();
             Assert.AreEqual(A, B);
+            B = A.AsReadOnlyTensorSpan().Clone();
+            Assert.AreEqual(A, B);
+            B = A.AsTensorSpan().Clone();
+            Assert.AreEqual(A, B);
         }
 
         [TestCase((float)1)]
