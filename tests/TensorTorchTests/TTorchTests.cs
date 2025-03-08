@@ -62,7 +62,9 @@ namespace Zyl.TensorTorch.Tests {
         [TestCaseSource(typeof(TestDataSource), nameof(TestDataSource.UseExtendInts))]
         public void CloneTest<T>(T src) where T : INumberBase<T> {
             var A = TTorch.Arange(src);
-            var B = A.Clone();
+            Tensor<T> B;
+            //B = A.Clone<Tensor<T>, T>();
+            B = A.Clone();
             Assert.AreEqual(A, B);
             B = A.AsReadOnlyTensorSpan().Clone();
             Assert.AreEqual(A, B);

@@ -43,10 +43,11 @@ namespace Zyl.TensorTorch {
         /// <summary>
         /// Returns a copy of source data (返回源数据的拷贝).
         /// </summary>
+        /// <typeparam name="TTensor">The tensor type (张量类型).</typeparam>
         /// <typeparam name="T">The element type (元素类型).</typeparam>
         /// <param name="source">The source (源).</param>
         /// <returns>Returns new Tensor (返回新张量).</returns>
-        public static Tensor<T> Clone<T>(this Tensor<T> source) {
+        public static Tensor<T> Clone<TTensor, T>(this IReadOnlyTensor<TTensor, T> source) where TTensor : IReadOnlyTensor<TTensor, T> {
             return Clone(source.AsReadOnlyTensorSpan());
         }
 
