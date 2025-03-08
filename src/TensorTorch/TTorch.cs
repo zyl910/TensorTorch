@@ -178,28 +178,6 @@ namespace Zyl.TensorTorch {
             return CreateAndFill(T.One, lengths, pinned);
         }
 
-        /// <summary>
-        /// ReadOnlySpan to <see cref="StringBuilder"/>.
-        /// </summary>
-        /// <typeparam name="T">The element type (元素类型).</typeparam>
-        /// <param name="builder">Output <see cref="StringBuilder"/>.</param>
-        /// <param name="source">The source.</param>
-        /// <param name="separator">The separator.</param>
-        public static void ToString<T>(StringBuilder builder, ReadOnlySpan<T> source, string? separator = null) {
-            TTorchImpl.ToString(builder, source, separator);
-        }
-
-        /// <summary>
-        /// ReadOnlySpan to String.
-        /// </summary>
-        /// <typeparam name="T">The element type (元素类型).</typeparam>
-        /// <param name="source">The source.</param>
-        /// <param name="separator">The separator.</param>
-        /// <returns>Returns string.</returns>
-        public static string ToString<T>(ReadOnlySpan<T> source, string? separator = null) {
-            return TTorchImpl.ToString(source, separator);
-        }
-
         // -- torch.zeros(size, out=None, dtype=None, layout=torch.strided, device=None, requires_grad=False)
 
         /// <summary>

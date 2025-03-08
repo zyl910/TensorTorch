@@ -104,7 +104,7 @@ namespace Zyl.SampleD2L.Chapter02Preliminaries {
             // 
             // x.shape
             // torch.Size([4])
-            writer.WriteLine("shape: Lengths={0}", TTorch.ToString(x.Lengths));
+            writer.WriteLine("shape: Lengths={0}", TensorCheck.ToString(x.Lengths));
 
             // 请注意，维度（dimension）这个词在不同上下文时往往会有不同的含义，这经常会使人感到困惑。 为了清楚起见，我们在此明确一下： 向量或轴的维度被用来表示向量或轴的长度，即向量或轴的元素数量。 然而，张量的维度用来表示张量具有的轴数。 在这个意义上，张量的某个轴的维数就是这个轴的长度。
             // 
@@ -148,7 +148,7 @@ namespace Zyl.SampleD2L.Chapter02Preliminaries {
             //         [16, 17, 18, 19]])
             var A = TTorch.Arange(20).Reshape(5, 4);
             writer.WriteLine("A: {0}", A.ToString());
-            writer.WriteLine("A.Strides: {0}", TTorch.ToString(A.Strides));
+            writer.WriteLine("A.Strides: {0}", TensorCheck.ToString(A.Strides));
 
             // 我们可以通过行索引（𝑖 ）和列索引（𝑗 ）来访问矩阵中的标量元素𝑎𝑖𝑗
             // ， 例如[𝐀]𝑖𝑗 。 如果没有给出矩阵𝐀
@@ -177,17 +177,17 @@ namespace Zyl.SampleD2L.Chapter02Preliminaries {
             //         [ 2,  6, 10, 14, 18],
             //         [ 3,  7, 11, 15, 19]])
             writer.WriteLine("A: {0}", A.ToString());
-            writer.WriteLine("A.ToArray: {0}", TTorch.ToString((ReadOnlySpan<int>)A.ToArray().AsSpan()));
+            writer.WriteLine("A.ToArray: {0}", TensorCheck.ToString((ReadOnlySpan<int>)A.ToArray().AsSpan()));
             var B = Tensor.Transpose(A);
             writer.WriteLine("A.T: {0}", B.ToString());
-            writer.WriteLine("A.T.Strides: {0}", TTorch.ToString(B.Strides));
+            writer.WriteLine("A.T.Strides: {0}", TensorCheck.ToString(B.Strides));
 
             // Column-Major Order Matrix (列主序矩阵)
             bool testColumnMajor = true;
             if (testColumnMajor) {
                 try {
                     var BArray = B.ToArray();
-                    writer.WriteLine("A.T.ToArray: {0}", TTorch.ToString((ReadOnlySpan<int>)B.ToArray().AsSpan()));
+                    writer.WriteLine("A.T.ToArray: {0}", TensorCheck.ToString((ReadOnlySpan<int>)B.ToArray().AsSpan()));
                     ReadOnlySpan<nint> lengths = B.Lengths;
                     ReadOnlySpan<nint> strides = B.Strides;
                     //ReadOnlySpan<nint> startCol = stackalloc nint[] { 0, 0 };
@@ -195,10 +195,10 @@ namespace Zyl.SampleD2L.Chapter02Preliminaries {
                     ReadOnlySpan<nint> stridesCol = stackalloc nint[] { 1, lengths[0] };
                     var BCol = new TensorSpan<int>(BArray, 0, lengthsCol, stridesCol); // .NET 9.0: System.ArgumentOutOfRangeException: Specified argument was out of the range of valid values. (Parameter 'Strides cannot be less than 0.'
                     writer.WriteLine("BCol: {0}", B.ToString());
-                    writer.WriteLine("BCol.Strides: {0}", TTorch.ToString(B.Strides));
+                    writer.WriteLine("BCol.Strides: {0}", TensorCheck.ToString(B.Strides));
                     var flattenArray = new int[BCol.FlattenedLength];
                     BCol.FlattenTo(flattenArray);
-                    writer.WriteLine("BCol.FlattenTo: {0}", TTorch.ToString((ReadOnlySpan<int>)flattenArray.AsSpan()));
+                    writer.WriteLine("BCol.FlattenTo: {0}", TensorCheck.ToString((ReadOnlySpan<int>)flattenArray.AsSpan()));
                 } catch (Exception ex) {
                     writer.WriteLine("Fail on testColumnMajor! {0}", ex.ToString());
                 }
@@ -246,7 +246,7 @@ namespace Zyl.SampleD2L.Chapter02Preliminaries {
             //          [20, 21, 22, 23]]])
             A = TTorch.Arange(24).Reshape(2, 3, 4);
             writer.WriteLine("A: {0}", A.ToString());
-            writer.WriteLine("A.Strides: {0}", TTorch.ToString(A.Strides));
+            writer.WriteLine("A.Strides: {0}", TensorCheck.ToString(A.Strides));
 
         }
 
@@ -325,7 +325,7 @@ namespace Zyl.SampleD2L.Chapter02Preliminaries {
             // A.shape, A.sum()
             // (torch.Size([5, 4]), tensor(190.))
             writer.WriteLine("A: {0}", A.ToString());
-            writer.WriteLine("A.shape: {0}", TTorch.ToString(A.Lengths));
+            writer.WriteLine("A.shape: {0}", TensorCheck.ToString(A.Lengths));
             //writer.WriteLine("A.sum: {0}", A.Sum()); // It is LINQ, not Tensor.
             writer.WriteLine("A.sum: {0}", Tensor.Sum(A.AsReadOnlyTensorSpan()));
             writer.WriteLine("A.SumTorch: {0}", A.SumTorch([]).ToString());
@@ -463,8 +463,8 @@ namespace Zyl.SampleD2L.Chapter02Preliminaries {
             // 
             // A.shape, x.shape, torch.mv(A, x)
             // (torch.Size([5, 4]), torch.Size([4]), tensor([ 14.,  38.,  62.,  86., 110.]))
-            writer.WriteLine("A.shape: {0}", TTorch.ToString(A.Lengths));
-            writer.WriteLine("x.shape: {0}", TTorch.ToString(x.Lengths));
+            writer.WriteLine("A.shape: {0}", TensorCheck.ToString(A.Lengths));
+            writer.WriteLine("x.shape: {0}", TensorCheck.ToString(x.Lengths));
             writer.WriteLine("torch.mv(A, x): {0}", A.MultiplyVector(x).ToString());
 
             // 矩阵-矩阵乘法

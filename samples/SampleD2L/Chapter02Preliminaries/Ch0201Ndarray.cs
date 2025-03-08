@@ -55,8 +55,8 @@ namespace Zyl.SampleD2L.Chapter02Preliminaries {
             // 
             // x.shape
             //torch.Size([12])
-            writer.WriteLine("shape: Lengths={0}", TTorch.ToString(x.Lengths));
-            writer.WriteLine("stride: {0}", TTorch.ToString(x.Strides));
+            writer.WriteLine("shape: Lengths={0}", TensorCheck.ToString(x.Lengths));
+            writer.WriteLine("stride: {0}", TensorCheck.ToString(x.Strides));
 
             // 如果只想知道张量中元素的总数，即形状的所有元素乘积，可以检查它的大小（size）。
             // 因为这里在处理的是一个向量，所以它的`shape`与它的`size`相同。
@@ -78,7 +78,7 @@ namespace Zyl.SampleD2L.Chapter02Preliminaries {
             //        [ 8,  9, 10, 11]])
             var X = x.Reshape(3, 4);
             writer.WriteLine("reshape: {0}", X.ToString());
-            writer.WriteLine("stride: {0}", TTorch.ToString(X.Strides));
+            writer.WriteLine("stride: {0}", TensorCheck.ToString(X.Strides));
 
             // 我们不需要通过手动指定每个维度来改变形状。
             // 也就是说，如果我们的目标形状是（高度,宽度），
@@ -88,7 +88,7 @@ namespace Zyl.SampleD2L.Chapter02Preliminaries {
             // 即我们可以用`x.reshape(-1,4)`或`x.reshape(3,-1)`来取代`x.reshape(3,4)`。
             writer.WriteLine("reshape(-1,4): {0}", x.Reshape(-1, 4).ToString());
             //writer.WriteLine("reshape(-1,5): {0}", x.Reshape(-1, 5).ToString()); // System.ArgumentException: Provided dimensions are not valid for reshaping
-            writer.WriteLine("stride: {0}", TTorch.ToString(X.Strides));
+            writer.WriteLine("stride: {0}", TensorCheck.ToString(X.Strides));
 
             // 有时，我们希望[**使用全0、全1、其他常量，或者从特定分布中随机采样的数字**]来初始化矩阵。
             // 我们可以创建一个形状为（2,3,4）的张量，其中所有元素都设置为0。代码如下：
@@ -96,7 +96,7 @@ namespace Zyl.SampleD2L.Chapter02Preliminaries {
             // torch.zeros((2, 3, 4))
             //writer.WriteLine("zeros: {0}", Tensor.Create<int>([2, 3, 4]).ToString());
             writer.WriteLine("zeros: {0}", TTorch.Zeros<int>([2, 3, 4]).ToString());
-            writer.WriteLine("stride: {0}", TTorch.ToString(TTorch.Zeros<int>([2, 3, 4]).Strides));
+            writer.WriteLine("stride: {0}", TensorCheck.ToString(TTorch.Zeros<int>([2, 3, 4]).Strides));
 
             // 同样，我们可以创建一个形状为`(2,3,4)`的张量，其中所有元素都设置为1。代码如下：
             // 
