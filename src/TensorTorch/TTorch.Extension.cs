@@ -9,6 +9,7 @@ using System.Numerics.Tensors;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using Zyl.TensorTorch.Delegates;
 using Zyl.TensorTorch.Impl;
 
 namespace Zyl.TensorTorch {
@@ -25,30 +26,55 @@ namespace Zyl.TensorTorch {
         /// <param name="source">The source (源).</param>
         /// <returns>Returns new Tensor (返回新张量).</returns>
         public static Tensor<T> Clone<T>(this in ReadOnlyTensorSpan<T> source) {
-            Tensor<T> rt = Tensor.CreateUninitialized<T>(source.Lengths);
-            source.CopyTo(rt);
-            return rt;
+            //return Clone<Tensor<T>, T>(source, null); // // OK. But it requires filling in verbose generic type parameters.
+            return Clone(source, Tensor<T>.Empty);
         }
 
         /// <summary>
-        /// Returns a copy of source data (返回源数据的拷贝).
-        /// </summary>
-        /// <typeparam name="T">The element type (元素类型).</typeparam>
-        /// <param name="source">The source (源).</param>
-        /// <returns>Returns new Tensor (返回新张量).</returns>
-        public static Tensor<T> Clone<T>(this in TensorSpan<T> source) {
-            return Clone((ReadOnlyTensorSpan<T>)source);
-        }
-
-        /// <summary>
-        /// Returns a copy of source data (返回源数据的拷贝).
+        /// Returns a copy of source data. It has parameters such as typeSample, creator, etc (返回源数据的拷贝. 它具有 typeSample,creator 等参数).
         /// </summary>
         /// <typeparam name="TTensor">The tensor type (张量类型).</typeparam>
         /// <typeparam name="T">The element type (元素类型).</typeparam>
         /// <param name="source">The source (源).</param>
+        /// <param name="typeSample">Sample of tensor type. Only its type is referenced, not its data. If this parameter is null, you need to fill in the generic parameter list manually; if this parameter is not null, you don't need to fill in the generic parameter list (张量类型的样例. 仅参考它的类型，不使用它的数据. 若该参数为 null, 需手工填写泛型参数列表; 若该参数非空, 则不用填写泛型参数列表).</param>
+        /// <param name="creator">The creator of tensor (张量的创建者). The default is <see cref="TensorDelegates.CreateUninitialized"/>.</param>
+        /// <param name="pinned">A Boolean whether the underlying data should be pinned or not (一个布尔值，表示是否应固定基础数据).</param>
         /// <returns>Returns new Tensor (返回新张量).</returns>
+        public static TTensor Clone<TTensor, T>(this in ReadOnlyTensorSpan<T> source, ITensor<TTensor, T>? typeSample, TensorCreator<TTensor, T>? creator = null, bool? pinned = null) where TTensor : ITensor<TTensor, T> {
+            if (null == creator) creator = TensorDelegates.CreateUninitialized<TTensor, T>;
+            bool pinned1 = pinned ?? typeSample?.IsPinned ?? false;
+            TTensor rt = creator(source, source.Lengths, source.Strides, pinned1);
+            source.CopyTo(rt.AsTensorSpan());
+            return rt;
+        }
+
+        /// <inheritdoc cref="Clone{T}(in ReadOnlyTensorSpan{T})"/>
+        public static Tensor<T> Clone<T>(this in TensorSpan<T> source) {
+            return Clone((ReadOnlyTensorSpan<T>)source);
+        }
+
+        /// <inheritdoc cref="Clone{TTensor, T}(in ReadOnlyTensorSpan{T}, ITensor{TTensor, T}?, TensorCreator{TTensor, T}?, bool?)"/>
+        public static TTensor Clone<TTensor, T>(this in TensorSpan<T> source, ITensor<TTensor, T>? typeSample, TensorCreator<TTensor, T>? creator = null, bool? pinned = null) where TTensor : ITensor<TTensor, T> {
+            return Clone((ReadOnlyTensorSpan<T>)source, typeSample, creator, pinned);
+        }
+
+        /// <inheritdoc cref="Clone{T}(in ReadOnlyTensorSpan{T})"/>
         public static Tensor<T> Clone<TTensor, T>(this IReadOnlyTensor<TTensor, T> source) where TTensor : IReadOnlyTensor<TTensor, T> {
-            return Clone(source.AsReadOnlyTensorSpan());
+            return Clone(source, Tensor<T>.Empty);
+        }
+
+        /// <summary>
+        /// Returns a copy of source data. It has parameters such as typeSample, creator, etc (返回源数据的拷贝. 它具有 typeSample,creator 等参数).
+        /// </summary>
+        /// <typeparam name="TTensorResult">The type of tensor result (张量返回值的类型).</typeparam>
+        /// <typeparam name="TTensor">The tensor type (张量类型).</typeparam>
+        /// <typeparam name="T">The element type (元素类型).</typeparam>
+        /// <param name="source">The source (源).</param>
+        /// <param name="typeSample">Sample of tensor type. Only its type is referenced, not its data. If this parameter is null, you need to fill in the generic parameter list manually; if this parameter is not null, you don't need to fill in the generic parameter list (张量类型的样例. 仅参考它的类型，不使用它的数据. 若该参数为 null, 需手工填写泛型参数列表; 若该参数非空, 则不用填写泛型参数列表).</param>
+        /// <param name="creator">The creator of tensor (张量的创建者). The default is <see cref="TensorDelegates.CreateUninitialized"/>.</param>
+        /// <returns>Returns new Tensor (返回新张量).</returns>
+        public static TTensorResult Clone<TTensorResult, TTensor, T>(this IReadOnlyTensor<TTensor, T> source, ITensor<TTensorResult, T>? typeSample, TensorCreator<TTensorResult, T>? creator = null) where TTensor : IReadOnlyTensor<TTensor, T> where TTensorResult : ITensor<TTensorResult, T> {
+            return Clone(source.AsReadOnlyTensorSpan(), typeSample, creator, source.IsPinned);
         }
 
         /// <summary>

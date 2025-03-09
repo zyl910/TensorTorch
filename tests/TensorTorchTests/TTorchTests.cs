@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -62,13 +63,34 @@ namespace Zyl.TensorTorch.Tests {
         [TestCaseSource(typeof(TestDataSource), nameof(TestDataSource.UseExtendInts))]
         public void CloneTest<T>(T src) where T : INumberBase<T> {
             var A = TTorch.Arange(src);
+            var typeSample = A;
             Tensor<T> B;
-            //B = A.Clone<Tensor<T>, T>();
+
+            // -- IReadOnlyTensor
+            // B = A.Clone<Tensor<T>, T>(); // OK. But it requires filling in verbose generic type parameters.
             B = A.Clone();
             Assert.AreEqual(A, B);
-            B = A.AsReadOnlyTensorSpan().Clone();
+            //B = A.Clone(null); // CS0411 The type arguments for method 'TTorch.Clone' cannot be inferred from the usage. Try specifying the type arguments explicitly.
+            B = A.Clone<Tensor<T>, Tensor<T>, T>(null); // OK. But it requires filling in verbose generic type parameters.
             Assert.AreEqual(A, B);
-            B = A.AsTensorSpan().Clone();
+            B = A.Clone(typeSample);
+            Assert.AreEqual(A, B);
+
+            // -- ReadOnlyTensorSpan
+            var aReadOnlyTensorSpan = A.AsReadOnlyTensorSpan();
+            B = aReadOnlyTensorSpan.Clone();
+            Assert.AreEqual(A, B);
+            //B = aReadOnlyTensorSpan.Clone(null); // CS0411 The type arguments for method 'TTorch.Clone' cannot be inferred from the usage. Try specifying the type arguments explicitly.
+            B = aReadOnlyTensorSpan.Clone<Tensor<T>, T>(null); // OK. But it requires filling in verbose generic type parameters.
+            Assert.AreEqual(A, B);
+            B = aReadOnlyTensorSpan.Clone(typeSample);
+            Assert.AreEqual(A, B);
+
+            // -- TensorSpan
+            var aTensorSpan = A.AsTensorSpan();
+            B = aTensorSpan.Clone();
+            Assert.AreEqual(A, B);
+            B = aTensorSpan.Clone(typeSample);
             Assert.AreEqual(A, B);
         }
 
