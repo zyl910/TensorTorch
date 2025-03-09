@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Numerics;
 using System.Numerics.Tensors;
 using Zyl.TensorTorch;
+using Zyl.TensorTorch.Delegates;
 
 namespace Zyl.TensorTorch.Tests {
     [TestFixture()]
@@ -85,6 +86,8 @@ namespace Zyl.TensorTorch.Tests {
             Assert.AreEqual(A, B);
             B = A.Clone(typeSample);
             Assert.AreEqual(A, B);
+            B = A.Clone(typeSample, TensorDelegates.CreateUninitializedWithStrides<Tensor<T>, T>);
+            Assert.AreEqual(A, B);
 
             // -- ReadOnlyTensorSpan
             var aReadOnlyTensorSpan = A.AsReadOnlyTensorSpan();
@@ -95,12 +98,16 @@ namespace Zyl.TensorTorch.Tests {
             Assert.AreEqual(A, B);
             B = aReadOnlyTensorSpan.Clone(typeSample);
             Assert.AreEqual(A, B);
+            B = aReadOnlyTensorSpan.Clone(typeSample, TensorDelegates.CreateUninitializedWithStrides<Tensor<T>, T>);
+            Assert.AreEqual(A, B);
 
             // -- TensorSpan
             var aTensorSpan = A.AsTensorSpan();
             B = aTensorSpan.Clone();
             Assert.AreEqual(A, B);
             B = aTensorSpan.Clone(typeSample);
+            Assert.AreEqual(A, B);
+            B = aTensorSpan.Clone(typeSample, TensorDelegates.CreateUninitializedWithStrides<Tensor<T>, T>);
             Assert.AreEqual(A, B);
         }
 
