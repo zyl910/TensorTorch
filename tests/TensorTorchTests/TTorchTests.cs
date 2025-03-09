@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,7 +15,16 @@ namespace Zyl.TensorTorch.Tests {
     public partial class TTorchTests {
 #pragma warning disable SYSLIB5001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
 
-        private static TextWriter Writer { get; } = Console.Out;
+        /// <inheritdoc cref="TextWriter.WriteLine(string, object?[])"/>
+        private static void WriteLine([StringSyntax("CompositeFormat")] string format, params object?[] args) {
+            //Console.WriteLine(format, args);
+            Debug.WriteLine(format, args);
+        }
+
+        /// <inheritdoc cref="TextWriter.WriteLine()"/>
+        private static void WriteLine() {
+            WriteLine(string.Empty);
+        }
 
         [TestCase((float)1)]
         [TestCase((double)2)]
@@ -30,7 +40,7 @@ namespace Zyl.TensorTorch.Tests {
         [TestCaseSource(typeof(TestDataSource), nameof(TestDataSource.UseExtendInts))]
         public void ArangeTest<T>(T src) where T : INumberBase<T> {
             int len = int.CreateTruncating(src);
-            Writer.WriteLine("len: {0}", len);
+            WriteLine("len: {0}", len);
             Tensor<T> expected = Tensor.Create<T>(Enumerable.Range(0, len).Select(i => T.CreateTruncating(i)), [len]);
 
             Tensor<T> dst = TTorch.Arange(src);
@@ -113,7 +123,7 @@ namespace Zyl.TensorTorch.Tests {
             const nint one = 1;
             const nint m = 5, n = 4;
             const nint numel = m * n;
-            Writer.WriteLine(string.Format("SumTorchTest<{0}>", src));
+            WriteLine(string.Format("SumTorchTest<{0}>", src));
             T numelT = T.CreateChecked(numel);
             Tensor<T> A = TTorch.Arange(numelT).Reshape(m, n);
             T sumData = Tensor.Sum(A.AsReadOnlyTensorSpan());

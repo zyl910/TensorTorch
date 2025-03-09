@@ -22,7 +22,7 @@ namespace Zyl.TensorTorch.Tests {
             const nint one = 1;
             const nint m = 5, n = 4;
             const nint numel = m * n;
-            Writer.WriteLine(string.Format("MeanTorchTest<{0}>", src));
+            WriteLine(string.Format("MeanTorchTest<{0}>", src));
             T numelT = T.CreateChecked(numel);
             Tensor<T> A = TTorch.Arange(numelT).Reshape(m, n);
             T sumData = Tensor.Average(A.AsReadOnlyTensorSpan());
@@ -84,7 +84,7 @@ namespace Zyl.TensorTorch.Tests {
         public void MultiplyVectorTest<T>(T src) where T : INumberBase<T> {
             const nint m = 5, n = 4;
             const nint numel = m * n;
-            Writer.WriteLine(string.Format("MultiplyVectorTest<{0}>", src));
+            WriteLine(string.Format("MultiplyVectorTest<{0}>", src));
             T numelT = T.CreateChecked(numel);
             Tensor<T> A = TTorch.Arange(numelT).Reshape(m, n);
             Tensor<T> x = TTorch.Arange(T.CreateChecked(n));
