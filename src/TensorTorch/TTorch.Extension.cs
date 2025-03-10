@@ -59,8 +59,8 @@ namespace Zyl.TensorTorch {
         }
 
         /// <inheritdoc cref="Clone{T}(in ReadOnlyTensorSpan{T})"/>
-        public static Tensor<T> Clone<TTensor, T>(this IReadOnlyTensor<TTensor, T> source) where TTensor : IReadOnlyTensor<TTensor, T> {
-            return Clone(source, Tensor<T>.Empty);
+        public static TTensor Clone<TTensor, T>(this IReadOnlyTensor<TTensor, T> source) where TTensor : ITensor<TTensor, T> {
+            return Clone(source, TTensor.Empty);
         }
 
         /// <summary>
