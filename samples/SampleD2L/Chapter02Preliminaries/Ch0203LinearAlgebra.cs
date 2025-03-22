@@ -194,13 +194,50 @@ namespace Zyl.SampleD2L.Chapter02Preliminaries {
                     ReadOnlySpan<nint> lengthsCol = stackalloc nint[] { lengths[1], lengths[0] };
                     ReadOnlySpan<nint> stridesCol = stackalloc nint[] { 1, lengths[0] };
                     var BCol = new TensorSpan<int>(BArray, 0, lengthsCol, stridesCol); // .NET 9.0: System.ArgumentOutOfRangeException: Specified argument was out of the range of valid values. (Parameter 'Strides cannot be less than 0.'
-                    writer.WriteLine("BCol: {0}", B.ToString());
-                    writer.WriteLine("BCol.Strides: {0}", TensorCheck.ToString(B.Strides));
+                    writer.WriteLine("BCol: {0}", BCol.ToString());
+                    writer.WriteLine("BCol.Strides: {0}", TensorCheck.ToString(BCol.Strides));
                     var flattenArray = new int[BCol.FlattenedLength];
                     BCol.FlattenTo(flattenArray);
                     writer.WriteLine("BCol.FlattenTo: {0}", TensorCheck.ToString((ReadOnlySpan<int>)flattenArray.AsSpan()));
                 } catch (Exception ex) {
                     writer.WriteLine("Fail on testColumnMajor! {0}", ex.ToString());
+                }
+                writer.WriteLine();
+            }
+
+            // 24-bit bitmap (24位位图). R8G8B8
+            bool testBitmap24 = true;
+            if (testBitmap24) {
+                // 2*2 24-bit bitmap, align 4.
+                byte[] src = [ 1, 2, 3, 4, 5, 6, 0, 0,
+                    7, 8, 9, 10, 11, 12, 0, 0, 0 ];
+                // Reshape.
+                try {
+                    Tensor<byte> bm = Tensor.Create(src, [2, 2, 3], [8, 3, 1]);
+                    writer.WriteLine("bm: {0}", bm.ToString());
+                    writer.WriteLine("bm.Strides: {0}", TensorCheck.ToString(bm.Strides));
+                    TensorSpan<byte> bmSpan = bm.AsTensorSpan();
+                    var bmSpan1 = bmSpan.Reshape(2, 6); // .NET 9.0: System.ArgumentException: The Tensor provided is either non-contiguous or non-dense. Reshape only works with contigous and dense memory. You may need to Broadcast or Copy the data to be contigous.  // TensorHelpers.IsContiguousAndDense is false
+                    writer.WriteLine("bmSpan1: {0}", bmSpan1.ToString());
+                    writer.WriteLine("bmSpan1.Strides: {0}", TensorCheck.ToString(bmSpan1.Strides));
+                } catch (Exception ex) {
+                    writer.WriteLine("Fail on testBitmap24-Reshape ! {0}", ex.ToString());
+                }
+                // Reshape2.
+                try {
+                    var bmSpan = new TensorSpan<byte>(src, [2, 6], [8, 1]);
+                    writer.WriteLine("bmSpan: {0}", bmSpan.ToString());
+                    writer.WriteLine("bmSpan.Strides: {0}", TensorCheck.ToString(bmSpan.Strides));
+                } catch (Exception ex) {
+                    writer.WriteLine("Fail on testBitmap24-Reshape2 ! {0}", ex.ToString());
+                }
+                // StrideNegative.
+                try {
+                    var bmSpan = new TensorSpan<byte>(src, 8, [2, 6], [-8, 1]); // .NET 9.0: System.ArgumentOutOfRangeException: Specified argument was out of the range of valid values. (Parameter 'Strides cannot be less than 0.')  // TensorSpanHelpers.ValidateStrides
+                    writer.WriteLine("bmSpan: {0}", bmSpan.ToString());
+                    writer.WriteLine("bmSpan.Strides: {0}", TensorCheck.ToString(bmSpan.Strides));
+                } catch (Exception ex) {
+                    writer.WriteLine("Fail on testBitmap24-StrideNegative ! {0}", ex.ToString());
                 }
                 writer.WriteLine();
             }
